@@ -1,14 +1,15 @@
 package dao;
 
-import dao.modal.Document;
+import edu.carleton.comp4601.dao.Document;
+import edu.carleton.comp4601.dao.DocumentCollection;
 
 public interface CrawlDataDAO {
 
     void create(Document document);
 
-    void findOneById();
+    Document findOneById();
 
-    void findAll();
+    DocumentCollection findAll();
 
     void update(Document document);
 
