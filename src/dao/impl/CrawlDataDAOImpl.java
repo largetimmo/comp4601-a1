@@ -1,11 +1,9 @@
 package dao.impl;
 
 import com.mongodb.client.model.Filters;
-import com.sleepycat.je.tree.IN;
 import dao.AbstractDAO;
 import dao.CrawlDataDAO;
 import dao.modal.CrawlDataEntity;
-import edu.carleton.comp4601.dao.DocumentCollection;
 import org.bson.Document;
 
 import java.util.ArrayList;
