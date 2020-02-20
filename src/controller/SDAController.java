@@ -10,4 +10,11 @@ public class SDAController {
     public String whoAmI(){
         return "COMP4601 Searchable Document Archive: Junhao Chen And Mr. Liu";
     }
+
+//    @GET
+//    @Path("id")
+//    @Produces(MediaType.APPLICATION_XML)
+//    public Document getDocumentByIdXML(@PathParam("id") String id){
+//
+//    }
 }

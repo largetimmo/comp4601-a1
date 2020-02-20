@@ -2,9 +2,7 @@ package dao.impl;
 
 import com.mongodb.client.model.Filters;
 import dao.AbstractDAO;
-import dao.CrawlDataDAO;
 import dao.CrawlGraphDAO;
-import dao.modal.CrawlDataEntity;
 import dao.modal.CrawlGraphEntity;
 import org.bson.Document;
 
