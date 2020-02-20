@@ -1,17 +1,18 @@
 package dao;
 
-import edu.carleton.comp4601.dao.Document;
-import edu.carleton.comp4601.dao.DocumentCollection;
+import dao.modal.CrawlDataEntity;
 
-public interface CrawlDataDAO {
+import java.util.List;
 
-    void create(Document document);
+public interface CrawlDataDAO extends MongoDAO<CrawlDataEntity> {
 
-    Document findOneById();
+    void create(CrawlDataEntity document);
 
-    DocumentCollection findAll();
+    CrawlDataEntity findOneById(Integer id);
 
-    void update(Document document);
+    List<CrawlDataEntity> findAll();
+
+    void update(CrawlDataEntity document);
 
     void delete(Integer id);
 
