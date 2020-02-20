@@ -15,7 +15,8 @@
           <element id="library" level="project" name="org.jsoup:jsoup:1.12.2" />
           <element id="library" level="project" name="org.glassfish.jersey.containers:jersey-container-servlet:2.27" />
           <element id="library" level="project" name="org.glassfish.jersey.inject:jersey-hk2:2.27" />
-          <element id="library" level="project" name="lib" />
+          <element id="library" level="project" name="lib"/>
+          <element id="library" level="project" name="sda-1.0"/>
         </element>
       </element>
     </root>
