@@ -14,4 +14,7 @@
         <servlet-name>COMP4601Assignment1</servlet-name>
         <url-pattern>/rest/*</url-pattern>
     </servlet-mapping>
+    <listener>
+        <listener-class>service.StartUpManager</listener-class>
+    </listener>
 </web-app>
