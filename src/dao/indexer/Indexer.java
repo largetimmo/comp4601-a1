@@ -30,18 +30,19 @@ public class Indexer {
         this.count = 0;
     }
 
-    public void indexDocument(IndexWriter writer, edu.carleton.comp4601.dao.Document document) throws IOException {
+    public void indexDocument(edu.carleton.comp4601.dao.Document document) throws IOException {
         doc = new Document();
         try {
-            doc.add(new StringField("docID",document.getId().toString(), Field.Store.YES));
-            doc.add(new StringField("docName",document.getName(),Field.Store.YES));
-            doc.add(new TextField("docContent",document.getContent(),Field.Store.YES));
+            doc.add(new StringField("docId",document.getId().toString(), Field.Store.YES));
+            doc.add(new StringField("i",document.getName(),Field.Store.YES));
+            doc.add(new TextField("content",document.getContent(),Field.Store.YES));
             doc.add(new StringField("docURL",document.getUrl(),Field.Store.YES));
             Date date = new Date();
             doc.add(new StringField("docDate",Long.toString(date.getTime()), Field.Store.YES));
 
         }catch (NumberFormatException e){}
         writer.addDocument(doc);
+        writer.commit();
         writer.close();
     }
 
