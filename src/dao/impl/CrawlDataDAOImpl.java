@@ -23,18 +23,26 @@ public class CrawlDataDAOImpl extends AbstractDAO implements CrawlDataDAO {
         super(COLLECTION_NAME);
     }
 
+    private static Integer docId = 0;
+
 
     @Override
-    public void create(CrawlDataEntity document) {
+    public synchronized void create(CrawlDataEntity document) {
         if (findOneById(document.getId())!= null){
             collection.findOneAndReplace(Filters.eq("id",document.getId()),map(document));
         }else{
+            if (document.getId() == null){
+                document.setId(docId++);
+            }
             collection.insertOne(map(document));
         }
     }
 
     @Override
     public CrawlDataEntity findOneById(Integer id) {
+        if (id == null){
+            return null;
+        }
         Document document = (Document) collection.find(Filters.eq("id",id)).iterator().tryNext();
         if (document!= null) {
             return map(document);
@@ -66,6 +74,9 @@ public class CrawlDataDAOImpl extends AbstractDAO implements CrawlDataDAO {
         Document document = new Document();
         document.put("id",entity.getId());
         document.put("content",entity.getContent());
+        document.put("url",entity.getUrl());
+        document.put("parentUrl",entity.getChildUrl());
+        document.put("time",entity.getTimestamp());
         return document;
     }
 
@@ -74,6 +85,9 @@ public class CrawlDataDAOImpl extends AbstractDAO implements CrawlDataDAO {
         CrawlDataEntity crawlDataEntity = new CrawlDataEntity();
         crawlDataEntity.setId((Integer) document.get("id"));
         crawlDataEntity.setContent((String) document.get("content"));
+        crawlDataEntity.setTimestamp((Long) document.get("time"));
+        crawlDataEntity.setUrl((String) document.get("url"));
+        crawlDataEntity.setChildUrl((List<String>) document.get("parentUrl"));
         return crawlDataEntity;
     }
 }
