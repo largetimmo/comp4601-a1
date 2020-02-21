@@ -1,6 +1,5 @@
 package service.crawler;
 
-import dao.CrawlGraphDAO;
 import dao.impl.CrawlDataDAOImpl;
 import dao.impl.CrawlGraphDAOImpl;
 import dao.modal.CrawlGraphEntity;
