@@ -53,6 +53,14 @@ public class SDAController {
     }
 
     @GET
+    @Path("list")
+    @Produces(MediaType.TEXT_HTML)
+    public String getServiceList(){
+       ArrayList<String> list = smanager.list();
+       return "<html> " + "<title>" + "Search services list" + "</title>" + "<body><p>" + list + "</p></body>" + "</html> ";
+    }
+
+    @GET
     @Path("search/{terms}")
     @Produces(MediaType.APPLICATION_XML)
     public ArrayList<Document> searchDistributedXML(@PathParam("terms") String terms) throws SearchException, IOException, ClassNotFoundException {

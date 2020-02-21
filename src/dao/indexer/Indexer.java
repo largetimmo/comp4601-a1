@@ -1,5 +1,6 @@
 package dao.indexer;
 
+import dao.modal.CrawlDataEntity;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -30,11 +31,11 @@ public class Indexer {
         this.count = 0;
     }
 
-    public void indexDocument(edu.carleton.comp4601.dao.Document document) throws IOException {
+    public void indexADocument(CrawlDataEntity document, boolean boost) throws IOException {
         doc = new Document();
         try {
             doc.add(new StringField("docId",document.getId().toString(), Field.Store.YES));
-            doc.add(new StringField("i",document.getName(),Field.Store.YES));
+            //doc.add(new StringField("i",document.getName(),Field.Store.YES));
             doc.add(new TextField("content",document.getContent(),Field.Store.YES));
             doc.add(new StringField("docURL",document.getUrl(),Field.Store.YES));
             Date date = new Date();
