@@ -54,7 +54,7 @@ public class CrawlerManager {
                 for (String v : graph.vertexSet()){
                     CrawlGraphEntity crawlGraphEntity = new CrawlGraphEntity();
                     crawlGraphEntity.setId(v);
-                    crawlGraphEntity.setEdges(graph.outgoingEdgesOf(v).stream().map(graph::getEdgeTarget).collect(Collectors.toList()));
+                    crawlGraphEntity.setEdges(graph.outgoingEdgesOf(v).stream().map(graph::getEdgeTarget).distinct().collect(Collectors.toList()));
                     CrawlGraphDAOImpl.getInstance().addDocument(crawlGraphEntity);
                 }
             }).start();
