@@ -1,6 +1,7 @@
 package service;
 
 import edu.carleton.comp4601.utility.SearchServiceManager;
+import service.crawler.CrawlerManager;
 
 import java.io.IOException;
 
@@ -13,7 +14,7 @@ public class StartUpManager {
     }
 
     private void startCrawler() {
-
+        CrawlerManager.getInstance();
     }
 
     private void startSearchServiceManager() {

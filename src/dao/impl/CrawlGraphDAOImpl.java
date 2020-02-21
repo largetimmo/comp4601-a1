@@ -25,7 +25,7 @@ public class CrawlGraphDAOImpl extends AbstractDAO implements CrawlGraphDAO {
 
 
     @Override
-    public void addDocument(CrawlGraphEntity crawlGraphEntity) {
+    public synchronized void addDocument(CrawlGraphEntity crawlGraphEntity) {
         long count = collection.countDocuments(Filters.eq("id",crawlGraphEntity.getId()));
         Document document = map(crawlGraphEntity);
         if (count > 0){
@@ -55,8 +55,8 @@ public class CrawlGraphDAOImpl extends AbstractDAO implements CrawlGraphDAO {
     @Override
     public CrawlGraphEntity map(Document document) {
         CrawlGraphEntity crawlGraphEntity = new CrawlGraphEntity();
-        crawlGraphEntity.setId((Integer) document.get("id"));
-        crawlGraphEntity.setEdges((List<Integer>) document.get("edges"));
+        crawlGraphEntity.setId((String) document.get("id"));
+        crawlGraphEntity.setEdges((List<String>) document.get("edges"));
         return crawlGraphEntity;
     }
 }
