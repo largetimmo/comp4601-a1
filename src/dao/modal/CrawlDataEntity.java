@@ -17,6 +17,8 @@ public class CrawlDataEntity {
 
     private Long timestamp;
 
+    private Integer docId;
+
     public CrawlDataEntity(Integer id, String content, String url, List<String> childUrl, Long timestamp) {
         this.id = id;
         this.content = content;
@@ -66,5 +68,13 @@ public class CrawlDataEntity {
 
     public void setTimestamp(Long timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public Integer getDocId() {
+        return docId;
+    }
+
+    public void setDocId(Integer docId) {
+        this.docId = docId;
     }
 }
