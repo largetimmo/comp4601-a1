@@ -38,7 +38,6 @@ public class GraphManager {
                 add(graph,list.get(i).getUrl(),list.get(i).getChildUrl().get(j));
             }
         }
-
         return graph;
 
     }
