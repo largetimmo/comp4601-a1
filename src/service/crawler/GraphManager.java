@@ -24,10 +24,10 @@ public class GraphManager {
         if (!graph.vertexSet().contains(id)){
             graph.addVertex(id);
         }
-        graph.addEdge(parent_id, id);
+        if (!id.equals(parent_id)){
+            graph.addEdge(parent_id, id);
 
-
-        System.out.println("Current size:" + graph.vertexSet().size());
+        }
 
     }
 
