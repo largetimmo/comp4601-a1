@@ -5,11 +5,11 @@ import java.util.List;
 
 public class CrawlGraphEntity {
 
-    private Integer id;
+    private String id;
 
-    private List<Integer> edges;
+    private List<String> edges;
 
-    public CrawlGraphEntity(Integer id, List<Integer> edges) {
+    public CrawlGraphEntity(String id, List<String> edges) {
         this.id = id;
         this.edges = edges;
     }
@@ -17,19 +17,19 @@ public class CrawlGraphEntity {
     public CrawlGraphEntity() {
     }
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 
-    public List<Integer> getEdges() {
+    public List<String> getEdges() {
         return edges;
     }
 
-    public void setEdges(List<Integer> edges) {
+    public void setEdges(List<String> edges) {
         this.edges = edges;
     }
 }
