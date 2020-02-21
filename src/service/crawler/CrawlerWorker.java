@@ -7,6 +7,9 @@ import edu.uci.ics.crawler4j.crawler.WebCrawler;
 import edu.uci.ics.crawler4j.parser.HtmlParseData;
 import edu.uci.ics.crawler4j.url.WebURL;
 import org.apache.tika.Tika;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -39,12 +42,16 @@ public class CrawlerWorker extends WebCrawler {
         String url = page.getWebURL().getURL();
         crawlerData.setTimestamp(System.currentTimeMillis());
         crawlerData.setUrl(url);
+
         if (tikaManager == null){
             tikaManager = TikaManager.getInstance();
         }
         if (page.getContentType().toLowerCase().equals("text/html")){
             crawlerData.setContent(((HtmlParseData)page.getParseData()).getHtml());
             crawlerData.setChildUrl(((HtmlParseData)page.getParseData()).getOutgoingUrls().stream().map(WebURL::getURL).collect(Collectors.toList()));
+            //
+            Document parsedWeb = Jsoup.parse(((HtmlParseData)page.getParseData()).getHtml());
+
             CrawlDataDAOImpl.getInstance().create(crawlerData);
         }else if (url.endsWith("pdf")){
             tikaManager.parsePdf(page);

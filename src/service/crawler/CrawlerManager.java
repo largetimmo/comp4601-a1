@@ -7,6 +7,7 @@ import dao.modal.CrawlGraphEntity;
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
 import edu.uci.ics.crawler4j.crawler.CrawlController;
 import edu.uci.ics.crawler4j.fetcher.PageFetcher;
+import edu.uci.ics.crawler4j.frontier.DocIDServer;
 import edu.uci.ics.crawler4j.robotstxt.RobotstxtConfig;
 import edu.uci.ics.crawler4j.robotstxt.RobotstxtServer;
 import org.jgrapht.Graph;
@@ -22,6 +23,8 @@ public class CrawlerManager {
     private static final String BASE_URL3 = "https://www.ics.uci.edu/~lopes/";
 
     private static final CrawlerManager INSTANCE = new CrawlerManager();
+
+    private DocIDServer docIDServer = null;
 
     public static CrawlerManager getInstance() {
         return INSTANCE;
@@ -42,6 +45,7 @@ public class CrawlerManager {
             controller.addSeed(BASE_URL);
             controller.addSeed(BASE_URL2);
             controller.addSeed(BASE_URL3);
+            docIDServer = controller.getDocIdServer();
             CrawlController finalController = controller;
             new Thread(()->{
                 CrawlController.WebCrawlerFactory<CrawlerWorker> factory = () -> new CrawlerWorker("dyndns.org:8443","uci.edu","sikaman.dyndns.org");
@@ -59,6 +63,10 @@ public class CrawlerManager {
             e.printStackTrace();
         }
 
+    }
+
+    public DocIDServer getDocIDServer() {
+        return docIDServer;
     }
 }
 

@@ -5,6 +5,7 @@ import dao.AbstractDAO;
 import dao.CrawlDataDAO;
 import dao.modal.CrawlDataEntity;
 import org.bson.Document;
+import service.crawler.CrawlerManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +35,7 @@ public class CrawlDataDAOImpl extends AbstractDAO implements CrawlDataDAO {
             if (document.getId() == null){
                 document.setId(docId++);
             }
+            document.setDocId(CrawlerManager.getInstance().getDocIDServer().getDocId(document.getUrl()));
             collection.insertOne(map(document));
         }
     }
@@ -77,6 +79,7 @@ public class CrawlDataDAOImpl extends AbstractDAO implements CrawlDataDAO {
         document.put("url",entity.getUrl());
         document.put("childUrl",entity.getChildUrl());
         document.put("time",entity.getTimestamp());
+        document.put("docId",entity.getDocId());
         return document;
     }
 
@@ -88,6 +91,7 @@ public class CrawlDataDAOImpl extends AbstractDAO implements CrawlDataDAO {
         crawlDataEntity.setTimestamp((Long) document.get("time"));
         crawlDataEntity.setUrl((String) document.get("url"));
         crawlDataEntity.setChildUrl((List<String>) document.get("childUrl"));
+        crawlDataEntity.setDocId((Integer) document.get("docId"));
         return crawlDataEntity;
     }
 }
