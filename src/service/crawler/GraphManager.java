@@ -17,16 +17,15 @@ public class GraphManager {
         return INSTANCE;
     }
 
-    public void add(Graph graph, String id, String parent_id) {
-        if (!graph.vertexSet().contains(parent_id)) {
-            graph.addVertex(parent_id);
+    public void add(Graph graph, String id, String child_id) {
+        if (!graph.vertexSet().contains(child_id)) {
+            graph.addVertex(child_id);
         }
         if (!graph.vertexSet().contains(id)){
             graph.addVertex(id);
         }
-        if (!id.equals(parent_id)){
-            graph.addEdge(parent_id, id);
-
+        if (!id.equals(child_id)){
+            graph.addEdge(id, child_id);
         }
 
     }
