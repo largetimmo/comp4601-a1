@@ -42,7 +42,6 @@ public class Indexer {
 
         }catch (NumberFormatException e){}
         writer.addDocument(doc);
-        writer.commit();
         writer.close();
     }
 

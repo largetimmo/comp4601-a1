@@ -23,7 +23,6 @@ public abstract class AbstractDAO {
         collection = database.getCollection(collectionName);
         this.collectionName = collectionName;
         //collection.drop();
-
     }
 
 
