@@ -16,9 +16,12 @@
           <element id="library" level="project" name="org.glassfish.jersey.containers:jersey-container-servlet:2.27" />
           <element id="library" level="project" name="org.glassfish.jersey.inject:jersey-hk2:2.27" />
           <element id="library" level="project" name="sda-1.0" />
-          <element id="library" level="project" name="org.mongodb:mongo-java-driver:3.12.1" />
-          <element id="library" level="project" name="org.apache.lucene:lucene-queryparser:8.4.1" />
           <element id="library" level="project" name="org.apache.lucene:lucene-core:8.4.1" />
+          <element id="library" level="project" name="org.apache.lucene:lucene-queryparser:8.4.1" />
+          <element id="library" level="project" name="org.apache.cxf:cxf-rt-rs-client:3.0.12" />
+          <element id="library" level="project" name="org.apache.pdfbox:pdfbox:2.0.6" />
+          <element id="library" level="project" name="org.apache.pdfbox:jempbox:1.8.13" />
+          <element id="library" level="project" name="org.mongodb:mongo-java-driver:3.12.1" />
           <element id="library" level="project" name="lib" />
         </element>
       </element>

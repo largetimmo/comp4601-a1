@@ -6,6 +6,8 @@ import dao.CrawlDataImageDAO;
 import dao.modal.CrawlDataImageEntity;
 import org.bson.Document;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class CrawlDataImageDAOImpl extends AbstractDAO implements CrawlDataImageDAO {
@@ -39,6 +41,16 @@ public class CrawlDataImageDAOImpl extends AbstractDAO implements CrawlDataImage
         }else{
             return map((Document) collection.find(Filters.eq("docId", docId)).iterator().tryNext());
         }
+    }
+
+    @Override
+    public List<CrawlDataImageEntity> findAll() {
+        List<CrawlDataImageEntity> list = new ArrayList<>();
+        for(Object doc: collection.find()){
+            Document document = (Document) doc;
+            list.add(map(document));
+        }
+        return list;
     }
 
     @Override

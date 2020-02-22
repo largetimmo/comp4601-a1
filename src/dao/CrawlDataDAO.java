@@ -16,5 +16,7 @@ public interface CrawlDataDAO extends MongoDAO<CrawlDataEntity> {
 
     void delete(Integer id);
 
+    CrawlDataEntity findByDocID(Integer docId);
+
 
 }

@@ -9,6 +9,7 @@ import service.crawler.CrawlerManager;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class CrawlDataDAOImpl extends AbstractDAO implements CrawlDataDAO {
 
@@ -72,6 +73,11 @@ public class CrawlDataDAOImpl extends AbstractDAO implements CrawlDataDAO {
     }
 
     @Override
+    public CrawlDataEntity findByDocID(Integer docId) {
+        return map((Document) collection.find(Filters.eq("docId",docId)).iterator().tryNext());
+    }
+
+    @Override
     public Document map(CrawlDataEntity entity) {
         Document document = new Document();
         document.put("id",entity.getId());
@@ -80,6 +86,7 @@ public class CrawlDataDAOImpl extends AbstractDAO implements CrawlDataDAO {
         document.put("childUrl",entity.getChildUrl());
         document.put("time",entity.getTimestamp());
         document.put("docId",entity.getDocId());
+        document.put("metadata",entity.getMetadata());
         return document;
     }
 
@@ -87,11 +94,12 @@ public class CrawlDataDAOImpl extends AbstractDAO implements CrawlDataDAO {
     public CrawlDataEntity map(Document document) {
         CrawlDataEntity crawlDataEntity = new CrawlDataEntity();
         crawlDataEntity.setId((Integer) document.get("id"));
-        crawlDataEntity.setContent((String) document.get("content"));
+        crawlDataEntity.setContent((List<String>) document.get("content"));
         crawlDataEntity.setTimestamp((Long) document.get("time"));
         crawlDataEntity.setUrl((String) document.get("url"));
         crawlDataEntity.setChildUrl((List<String>) document.get("childUrl"));
         crawlDataEntity.setDocId((Integer) document.get("docId"));
+        crawlDataEntity.setMetadata((Map<String, String>) document.get("metadata"));
         return crawlDataEntity;
     }
 }
