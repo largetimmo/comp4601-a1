@@ -51,7 +51,11 @@ public class Indexer {
             doc.add(new StringField("docId",document.getDocId().toString(), Field.Store.YES));
             //doc.add(new StringField("i",document.getName(),Field.Store.YES));
             if (document.getContent() != null){
-                doc.add(new TextField("content",document.getContent().toString(),Field.Store.YES));
+                String temp = "";
+                for (String s: document.getContent()){
+                    temp+=s+"\n";
+                }
+                doc.add(new TextField("content",temp,Field.Store.YES));
             }else {
                 doc.add(new TextField("content","",Field.Store.YES));
             }
