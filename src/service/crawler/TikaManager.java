@@ -21,15 +21,16 @@ public class TikaManager {
         return INSTANCE;
     }
 
+    private Tika tika = new Tika();
+
     public TikaManager() {
 
     }
 
     public Metadata parse(Page page){
         Parser parser = new AutoDetectParser();
-
         Metadata metadata = new Metadata();
-        BodyContentHandler bodyContentHandler = new BodyContentHandler(-1);
+        BodyContentHandler bodyContentHandler = new BodyContentHandler();
         try {
             parser.parse(new ByteArrayInputStream(page.getContentData()),bodyContentHandler,metadata,new ParseContext());
         } catch (IOException e) {

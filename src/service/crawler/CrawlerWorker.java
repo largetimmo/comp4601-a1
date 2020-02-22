@@ -51,7 +51,7 @@ public class CrawlerWorker extends WebCrawler {
         if (page.getParseData() instanceof HtmlParseData) {
             //
             Document parsedWeb = Jsoup.parse(((HtmlParseData) page.getParseData()).getHtml());
-            Elements imgTags = parsedWeb.select("img");
+            Elements imgTags = parsedWeb.select("a");
             if (imgTags.size() > 0) {
                 CrawlDataImageEntity imageEntity = new CrawlDataImageEntity();
                 imageEntity.setDocId(CrawlerManager.getInstance().getDocIDServer().getDocId(url));
