@@ -1,31 +1,31 @@
 package dao.indexer;
 
 import Jama.Matrix;
-import dao.CrawlGraphDAO;
-import dao.impl.CrawlGraphDAOImpl;
-import dao.modal.CrawlGraphEntity;
+import dao.CrawlDataDAO;
+import dao.impl.CrawlDataDAOImpl;
+import dao.modal.CrawlDataEntity;
 
 import java.util.List;
 
 public class PageRank {
     Double factor = 0.85;
     int max_iterations = 10;
-    CrawlGraphDAO graph;
+    CrawlDataDAO data;
 
     public PageRank(){
-        graph = CrawlGraphDAOImpl.getInstance();
+        data = CrawlDataDAOImpl.getInstance();
     }
 
     public Matrix createConnectionMatrix(){
-        List<CrawlGraphEntity> vertex = graph.findAll();
+        List<CrawlDataEntity> vertex = data.findAll();
         Matrix matrix = new Matrix(vertex.size(),vertex.size());
         int row=0;
-        for (CrawlGraphEntity c : vertex){
-            int n = c.getEdges().size();
-            List<String> l = c.getEdges();
+        for (CrawlDataEntity c : vertex){
+            int n = c.getChildUrl().size();
+            List<String> l = c.getChildUrl();
             int col = 0;
-            for (CrawlGraphEntity c2 : vertex){
-                if (l.contains(c2.getId())){
+            for (CrawlDataEntity c2 : vertex){
+                if (l.contains(c2.getUrl())){
 
                     double val = 1 * 1.0 / n;
                     matrix.set(row,col,val);
