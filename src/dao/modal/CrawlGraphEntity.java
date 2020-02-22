@@ -3,7 +3,7 @@ package dao.modal;
 
 import java.util.List;
 
-public class CrawlGraphEntity {
+public class  CrawlGraphEntity {
 
     private String id;
 
