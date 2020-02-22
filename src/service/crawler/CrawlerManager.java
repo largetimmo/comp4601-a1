@@ -2,26 +2,20 @@ package service.crawler;
 
 import dao.CrawlDataDAO;
 import dao.CrawlDataImageDAO;
-import dao.CrawlGraphDAO;
 import dao.impl.CrawlDataDAOImpl;
 import dao.impl.CrawlDataImageDAOImpl;
-import dao.impl.CrawlGraphDAOImpl;
 import dao.modal.CrawlDataEntity;
 import dao.modal.CrawlDataImageEntity;
-import dao.modal.CrawlGraphEntity;
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
 import edu.uci.ics.crawler4j.crawler.CrawlController;
 import edu.uci.ics.crawler4j.fetcher.PageFetcher;
 import edu.uci.ics.crawler4j.frontier.DocIDServer;
 import edu.uci.ics.crawler4j.robotstxt.RobotstxtConfig;
 import edu.uci.ics.crawler4j.robotstxt.RobotstxtServer;
-import org.jgrapht.Graph;
-import org.jgrapht.graph.DefaultEdge;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class CrawlerManager {
 
@@ -62,7 +56,7 @@ public class CrawlerManager {
             CrawlController finalController = controller;
             new Thread(()->{
                 CrawlController.WebCrawlerFactory<CrawlerWorker> factory = () -> new CrawlerWorker("dyndns.org:8443","uci.edu","sikaman.dyndns.org");
-//                finalController.start(factory, workers);
+               // finalController.start(factory, workers);
                 //Add image data
                 List<CrawlDataImageEntity> list = crawlDataImageDAO.findAll();
                 list.stream().forEach(ele->{

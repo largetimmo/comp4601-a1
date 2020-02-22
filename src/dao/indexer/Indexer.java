@@ -42,12 +42,16 @@ public class Indexer {
     public void indexADocument(CrawlDataEntity document) throws IOException {
         doc = new Document();
         try {
-            doc.add(new StringField("docId",document.getId().toString(), Field.Store.YES));
+            doc.add(new StringField("docId",document.getDocId().toString(), Field.Store.YES));
             //doc.add(new StringField("i",document.getName(),Field.Store.YES));
-            doc.add(new TextField("content",document.getContent(),Field.Store.YES));
+            for (String s: document.getContent()){
+                doc.add(new TextField("content",s,Field.Store.YES));
+            }
+
             doc.add(new StringField("docURL",document.getUrl(),Field.Store.YES));
             Date date = new Date();
             doc.add(new StringField("docDate",Long.toString(date.getTime()), Field.Store.YES));
+            doc.add(new StringField("type",document.getMetadata().get("Content-Type"),Field.Store.YES));
 
         }catch (NumberFormatException e){}
         writer.addDocument(doc);
