@@ -50,11 +50,12 @@ public class Indexer {
         try {
             doc.add(new StringField("docId",document.getDocId().toString(), Field.Store.YES));
             //doc.add(new StringField("i",document.getName(),Field.Store.YES));
-            for (String s: document.getContent()){
-                if (s != null){
-                    doc.add(new TextField("content",s,Field.Store.YES));
-                }
+            if (document.getContent() != null){
+                doc.add(new TextField("content",document.getContent().toString(),Field.Store.YES));
+            }else {
+                doc.add(new TextField("content","",Field.Store.YES));
             }
+
 
             doc.add(new StringField("docURL",document.getUrl(),Field.Store.YES));
             Date date = new Date();
