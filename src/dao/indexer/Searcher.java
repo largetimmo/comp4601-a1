@@ -21,10 +21,11 @@ public class Searcher {
     private IndexSearcher searcher;
     private QueryParser qParser;
     private Query query;
+    private String PATH = "lucene";
 
-    public Searcher(String indexDir) throws IOException {
+    public Searcher() throws IOException {
         //Directory indexDirectory = FSDirectory.open(new File(indexDir).toPath());
-        searcher = new IndexSearcher(DirectoryReader.open(FSDirectory.open(new File(indexDir).toPath())));
+        searcher = new IndexSearcher(DirectoryReader.open(FSDirectory.open(new File(PATH).toPath())));
         qParser = new QueryParser("content",new StandardAnalyzer());
     }
 

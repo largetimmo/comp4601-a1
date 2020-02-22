@@ -21,10 +21,16 @@ public class Indexer {
     private int count;
     private IndexWriter writer;
     Document doc;
+    private String PATH = "lucene";
 
-    public Indexer(String path) throws IOException
+    public Indexer() throws IOException
     {
-        Directory indexDirectory = FSDirectory.open(new File(path).toPath());
+        //clean all old files
+        for(File file: new java.io.File("lucene").listFiles()) {
+            if (!file.isDirectory())
+                file.delete();
+        }
+        Directory indexDirectory = FSDirectory.open(new File(PATH).toPath());
         StandardAnalyzer analyzer = new StandardAnalyzer();
         IndexWriterConfig indexWriterConfig = new IndexWriterConfig(analyzer);
         writer = new IndexWriter(indexDirectory, indexWriterConfig);
@@ -44,9 +50,16 @@ public class Indexer {
         try {
             doc.add(new StringField("docId",document.getDocId().toString(), Field.Store.YES));
             //doc.add(new StringField("i",document.getName(),Field.Store.YES));
-            for (String s: document.getContent()){
-                doc.add(new TextField("content",s,Field.Store.YES));
+            if (document.getContent() != null){
+                String temp = "";
+                for (String s: document.getContent()){
+                    temp+=s+"\n";
+                }
+                doc.add(new TextField("content",temp,Field.Store.YES));
+            }else {
+                doc.add(new TextField("content","",Field.Store.YES));
             }
+
 
             doc.add(new StringField("docURL",document.getUrl(),Field.Store.YES));
             Date date = new Date();
