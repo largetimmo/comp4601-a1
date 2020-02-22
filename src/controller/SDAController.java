@@ -2,12 +2,16 @@ package controller;
 
 import dao.CrawlDataDAO;
 import dao.impl.CrawlDataDAOImpl;
+import dao.indexer.Indexer;
+import dao.indexer.Searcher;
 import dao.modal.CrawlDataEntity;
 import edu.carleton.comp4601.dao.Document;
 import edu.carleton.comp4601.utility.SDAConstants;
 import edu.carleton.comp4601.utility.SearchException;
 import edu.carleton.comp4601.utility.SearchResult;
 import edu.carleton.comp4601.utility.SearchServiceManager;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.search.TopDocs;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -16,6 +20,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Path("/sda")
@@ -60,6 +65,31 @@ public class SDAController {
        return "<html> " + "<title>" + "Search services list" + "</title>" + "<body><p>" + list + "</p></body>" + "</html> ";
     }
 
+    @GET
+    @Path("noboost")
+    @Produces(MediaType.TEXT_HTML)
+    public String noboost() throws IOException {
+        Indexer i = new Indexer("I:\\comp4601-a1\\lucene");
+        List<CrawlDataEntity> cde = cdi.findAll();
+        i.indexDocuments(false,cde);
+        return "<html> " + "<title>" + "noboost" + "</title>" + "<body><p>" + "Re-indexed" + "</p></body>" + "</html> ";
+    }
+
+    @GET
+    @Path("query/{terms}")
+    @Produces(MediaType.APPLICATION_XML)
+    public List<Document> searchLocalXML(@PathParam("terms") String terms) throws SearchException, IOException, ClassNotFoundException, ParseException {
+        Searcher sc = new Searcher("I:\\comp4601-a1\\lucene");
+        TopDocs td = sc.search(terms,1000);
+
+        if(td.totalHits.value == 0) {
+            return null;
+        }
+
+        sc.print(td.scoreDocs);
+
+        return sc.getDocuments(td.scoreDocs);
+    }
     @GET
     @Path("search/{terms}")
     @Produces(MediaType.APPLICATION_XML)
