@@ -1,14 +1,21 @@
 package service.crawler;
 
 import dao.impl.CrawlDataDAOImpl;
+import dao.impl.CrawlDataImageDAOImpl;
 import dao.modal.CrawlDataEntity;
+import dao.modal.CrawlDataImageEntity;
 import edu.uci.ics.crawler4j.crawler.Page;
 import edu.uci.ics.crawler4j.crawler.WebCrawler;
 import edu.uci.ics.crawler4j.parser.HtmlParseData;
 import edu.uci.ics.crawler4j.url.WebURL;
 import org.apache.tika.Tika;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -39,12 +46,27 @@ public class CrawlerWorker extends WebCrawler {
         String url = page.getWebURL().getURL();
         crawlerData.setTimestamp(System.currentTimeMillis());
         crawlerData.setUrl(url);
+
         if (tikaManager == null){
             tikaManager = TikaManager.getInstance();
         }
         if (page.getContentType().toLowerCase().equals("text/html")){
             crawlerData.setContent(((HtmlParseData)page.getParseData()).getHtml());
             crawlerData.setChildUrl(((HtmlParseData)page.getParseData()).getOutgoingUrls().stream().map(WebURL::getURL).collect(Collectors.toList()));
+            //
+            Document parsedWeb = Jsoup.parse(((HtmlParseData)page.getParseData()).getHtml());
+            Elements imgTags = parsedWeb.select("a");
+            if (imgTags.size() > 0){
+                CrawlDataImageEntity imageEntity = new CrawlDataImageEntity();
+                imageEntity.setDocId(CrawlerManager.getInstance().getDocIDServer().getDocId(url));
+                imageEntity.setImageLink(new HashMap<>());
+                for(Element ele : imgTags){
+                    String imageText = ele.attr("alt");
+                    String imageLink = ele.attr("src");
+                    imageEntity.getImageLink().put(imageText,imageLink);
+                }
+                CrawlDataImageDAOImpl.getInstance().create(imageEntity);
+            }
             CrawlDataDAOImpl.getInstance().create(crawlerData);
         }else if (url.endsWith("pdf")){
             tikaManager.parsePdf(page);

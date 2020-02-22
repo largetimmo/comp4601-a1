@@ -15,6 +15,7 @@ import org.apache.lucene.store.FSDirectory;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 
 public class Indexer {
     private int count;
@@ -31,7 +32,14 @@ public class Indexer {
         this.count = 0;
     }
 
-    public void indexADocument(CrawlDataEntity document, boolean boost) throws IOException {
+    public void indexDocuments(boolean boost, List<CrawlDataEntity> l) throws IOException {
+        for (CrawlDataEntity c : l){
+            indexADocument(c);
+        }
+        writer.close();
+    }
+
+    public void indexADocument(CrawlDataEntity document) throws IOException {
         doc = new Document();
         try {
             doc.add(new StringField("docId",document.getId().toString(), Field.Store.YES));
@@ -43,7 +51,7 @@ public class Indexer {
 
         }catch (NumberFormatException e){}
         writer.addDocument(doc);
-        writer.close();
+        System.out.println("-------------------------------------------------------"+doc.get("docId"));
     }
 
     public void close() throws CorruptIndexException, IOException

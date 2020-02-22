@@ -9,8 +9,8 @@ public class StartUpManager {
 
 
     public StartUpManager() {
-        startCrawler();
-        startSearchServiceManager();
+//        startCrawler();
+//        startSearchServiceManager();
     }
 
     private void startCrawler() {
