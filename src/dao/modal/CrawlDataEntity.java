@@ -3,6 +3,7 @@ package dao.modal;
 import edu.uci.ics.crawler4j.url.WebURL;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class CrawlDataEntity {
@@ -18,6 +19,8 @@ public class CrawlDataEntity {
     private Long timestamp;
 
     private Integer docId;
+
+    private Map<String,String> metadata;
 
     public CrawlDataEntity(Integer id, String content, String url, List<String> childUrl, Long timestamp) {
         this.id = id;
@@ -76,5 +79,13 @@ public class CrawlDataEntity {
 
     public void setDocId(Integer docId) {
         this.docId = docId;
+    }
+
+    public Map<String, String> getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(Map<String, String> metadata) {
+        this.metadata = metadata;
     }
 }
