@@ -114,7 +114,11 @@ public class SDAController {
 
     private Document dataEntityToDocument(CrawlDataEntity cde){
         Document doc = new Document(cde.getId());
-        doc.setContent(cde.getContent());
+        String content = "";
+        for (String s : cde.getContent()){
+            content += s + "\n";
+        }
+        doc.setContent(content);
         doc.setScore((float) 0.0);
         doc.setName("name");
         doc.setUrl(cde.getUrl());

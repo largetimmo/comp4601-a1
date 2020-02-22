@@ -9,15 +9,13 @@ import edu.uci.ics.crawler4j.crawler.WebCrawler;
 import edu.uci.ics.crawler4j.parser.HtmlParseData;
 import edu.uci.ics.crawler4j.url.WebURL;
 import org.apache.tika.Tika;
+import org.apache.tika.metadata.Metadata;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -46,39 +44,39 @@ public class CrawlerWorker extends WebCrawler {
         String url = page.getWebURL().getURL();
         crawlerData.setTimestamp(System.currentTimeMillis());
         crawlerData.setUrl(url);
-
-        if (tikaManager == null){
+        crawlerData.setChildUrl((page.getParseData()).getOutgoingUrls().stream().map(WebURL::getURL).collect(Collectors.toList()));
+        if (tikaManager == null) {
             tikaManager = TikaManager.getInstance();
         }
-        if (page.getContentType().toLowerCase().equals("text/html")){
-            crawlerData.setContent(((HtmlParseData)page.getParseData()).getHtml());
-            crawlerData.setChildUrl(((HtmlParseData)page.getParseData()).getOutgoingUrls().stream().map(WebURL::getURL).collect(Collectors.toList()));
+        if (page.getParseData() instanceof HtmlParseData) {
             //
-            Document parsedWeb = Jsoup.parse(((HtmlParseData)page.getParseData()).getHtml());
+            Document parsedWeb = Jsoup.parse(((HtmlParseData) page.getParseData()).getHtml());
             Elements imgTags = parsedWeb.select("a");
-            if (imgTags.size() > 0){
+            if (imgTags.size() > 0) {
                 CrawlDataImageEntity imageEntity = new CrawlDataImageEntity();
                 imageEntity.setDocId(CrawlerManager.getInstance().getDocIDServer().getDocId(url));
                 imageEntity.setImageLink(new HashMap<>());
-                for(Element ele : imgTags){
+                for (Element ele : imgTags) {
                     String imageText = ele.attr("alt");
                     String imageLink = ele.attr("src");
-                    imageEntity.getImageLink().put(imageText,imageLink);
+                    imageEntity.getImageLink().put(imageText, imageLink);
                 }
                 CrawlDataImageDAOImpl.getInstance().create(imageEntity);
             }
-            CrawlDataDAOImpl.getInstance().create(crawlerData);
-        }else if (url.endsWith("pdf")){
-            tikaManager.parsePdf(page);
-        }else if (url.endsWith("doc") || url.endsWith("docx")){
-            tikaManager.parseExcel(page);
-        }else if (url.endsWith("xls") || url.endsWith("xlsx")){
-            tikaManager.parseExcel(page);
-        }else if (url.endsWith("ppt") || url.endsWith("pptx")){
-            tikaManager.parsePowerPoint(page);
-        }else{
-            tikaManager.parseImage(page);
+            Elements paragraphTag = parsedWeb.select("p");
+            Elements titleTag = parsedWeb.select("title");
+            List<String> contentList = new ArrayList<>();
+            paragraphTag.stream().map(Element::text).forEach(contentList::add);
+            titleTag.stream().map(Element::text).forEach(contentList::add);
+            crawlerData.setContent(contentList);
         }
+        Metadata metadata = tikaManager.parse(page);
+        Map<String,String> metadataMap = new HashMap<>();
+        for (String name : metadata.names()) {
+            metadataMap.put(name,metadata.get(name));
+        }
+        crawlerData.setMetadata(metadataMap);
+        CrawlDataDAOImpl.getInstance().create(crawlerData);
 
     }
 }

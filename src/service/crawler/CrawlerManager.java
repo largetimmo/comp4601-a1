@@ -1,18 +1,21 @@
 package service.crawler;
 
+import dao.CrawlDataDAO;
+import dao.CrawlDataImageDAO;
 import dao.impl.CrawlDataDAOImpl;
-import dao.impl.CrawlGraphDAOImpl;
-import dao.modal.CrawlGraphEntity;
+import dao.impl.CrawlDataImageDAOImpl;
+import dao.modal.CrawlDataEntity;
+import dao.modal.CrawlDataImageEntity;
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
 import edu.uci.ics.crawler4j.crawler.CrawlController;
 import edu.uci.ics.crawler4j.fetcher.PageFetcher;
 import edu.uci.ics.crawler4j.frontier.DocIDServer;
 import edu.uci.ics.crawler4j.robotstxt.RobotstxtConfig;
 import edu.uci.ics.crawler4j.robotstxt.RobotstxtServer;
-import org.jgrapht.Graph;
-import org.jgrapht.graph.DefaultEdge;
 
-import java.util.stream.Collectors;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 public class CrawlerManager {
 
@@ -24,12 +27,17 @@ public class CrawlerManager {
     private static final CrawlerManager INSTANCE = new CrawlerManager();
 
     private DocIDServer docIDServer = null;
+    private CrawlDataDAO crawlDataDAO;
+    private CrawlDataImageDAO crawlDataImageDAO;
+
 
     public static CrawlerManager getInstance() {
         return INSTANCE;
     }
 
     public CrawlerManager() {
+        crawlDataDAO = CrawlDataDAOImpl.getInstance();
+        crawlDataImageDAO = CrawlDataImageDAOImpl.getInstance();
         CrawlConfig config = new CrawlConfig();
         config.setIncludeHttpsPages(true);
         config.setCrawlStorageFolder("here");
@@ -48,14 +56,19 @@ public class CrawlerManager {
             CrawlController finalController = controller;
             new Thread(()->{
                 CrawlController.WebCrawlerFactory<CrawlerWorker> factory = () -> new CrawlerWorker("dyndns.org:8443","uci.edu","sikaman.dyndns.org");
-                finalController.start(factory, workers);
-                Graph<String, DefaultEdge> graph = GraphManager.getInstance().generateGraph(CrawlDataDAOImpl.getInstance().findAll());
-                for (String v : graph.vertexSet()){
-                    CrawlGraphEntity crawlGraphEntity = new CrawlGraphEntity();
-                    crawlGraphEntity.setId(v);
-                    crawlGraphEntity.setEdges(graph.outgoingEdgesOf(v).stream().map(graph::getEdgeTarget).distinct().collect(Collectors.toList()));
-                    CrawlGraphDAOImpl.getInstance().addDocument(crawlGraphEntity);
-                }
+               // finalController.start(factory, workers);
+                //Add image data
+                List<CrawlDataImageEntity> list = crawlDataImageDAO.findAll();
+                list.stream().forEach(ele->{
+                    for (Map.Entry<String,String> entry : ele.getImageLink().entrySet()){
+                        Integer docId = docIDServer.getDocId(entry.getValue());
+                        if (docId != -1){
+                            CrawlDataEntity entity = crawlDataDAO.findByDocID(docId);
+                            entity.setContent(Arrays.asList(entry.getKey()));
+                            crawlDataDAO.update(entity);
+                        }
+                    }
+                });
             }).start();
 
         } catch (Exception e) {
