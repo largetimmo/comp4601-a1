@@ -28,9 +28,10 @@ public class SDAController {
     public static CrawlDataDAO cdi;
     private SearchServiceManager smanager;
 
-    public SDAController(){
+    public SDAController() throws IOException {
         cdi = CrawlDataDAOImpl.getInstance();
         smanager = SearchServiceManager.getInstance();
+
     }
 
     @GET
@@ -69,7 +70,7 @@ public class SDAController {
     @Path("noboost")
     @Produces(MediaType.TEXT_HTML)
     public String noboost() throws IOException {
-        Indexer i = new Indexer("I:\\comp4601-a1\\lucene");
+        Indexer i = new Indexer();
         List<CrawlDataEntity> cde = cdi.findAll();
         i.indexDocuments(false,cde);
         return "<html> " + "<title>" + "noboost" + "</title>" + "<body><p>" + "Re-indexed" + "</p></body>" + "</html> ";
@@ -79,7 +80,7 @@ public class SDAController {
     @Path("query/{terms}")
     @Produces(MediaType.APPLICATION_XML)
     public List<Document> searchLocalXML(@PathParam("terms") String terms) throws SearchException, IOException, ClassNotFoundException, ParseException {
-        Searcher sc = new Searcher("I:\\comp4601-a1\\lucene");
+        Searcher sc = new Searcher();
         TopDocs td = sc.search(terms,1000);
 
         if(td.totalHits.value == 0) {
