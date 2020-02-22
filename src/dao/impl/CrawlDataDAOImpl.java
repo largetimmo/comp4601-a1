@@ -10,7 +10,6 @@ import service.crawler.CrawlerManager;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 public class CrawlDataDAOImpl extends AbstractDAO implements CrawlDataDAO {
 
@@ -75,7 +74,7 @@ public class CrawlDataDAOImpl extends AbstractDAO implements CrawlDataDAO {
 
     @Override
     public CrawlDataEntity findByDocID(Integer docId) {
-        return map((Document) Objects.requireNonNull(collection.find(Filters.eq("docId", docId)).iterator().tryNext()));
+        return map((Document) collection.find(Filters.eq("docId",docId)).iterator().tryNext());
     }
 
     @Override
@@ -95,7 +94,7 @@ public class CrawlDataDAOImpl extends AbstractDAO implements CrawlDataDAO {
     public CrawlDataEntity map(Document document) {
         CrawlDataEntity crawlDataEntity = new CrawlDataEntity();
         crawlDataEntity.setId((Integer) document.get("id"));
-        crawlDataEntity.setContent((String) document.get("content"));
+        crawlDataEntity.setContent((List<String>) document.get("content"));
         crawlDataEntity.setTimestamp((Long) document.get("time"));
         crawlDataEntity.setUrl((String) document.get("url"));
         crawlDataEntity.setChildUrl((List<String>) document.get("childUrl"));

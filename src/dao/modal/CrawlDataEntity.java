@@ -10,7 +10,7 @@ public class CrawlDataEntity {
 
     private Integer id;
 
-    private String content;
+    private List<String> content;
 
     private String url;
 
@@ -22,9 +22,8 @@ public class CrawlDataEntity {
 
     private Map<String,String> metadata;
 
-    public CrawlDataEntity(Integer id, String content, String url, List<String> childUrl, Long timestamp) {
+    public CrawlDataEntity(Integer id,  String url, List<String> childUrl, Long timestamp) {
         this.id = id;
-        this.content = content;
         this.url = url;
         this.childUrl = childUrl;
         this.timestamp = timestamp;
@@ -41,11 +40,11 @@ public class CrawlDataEntity {
         this.id = id;
     }
 
-    public String getContent() {
+    public List<String> getContent() {
         return content;
     }
 
-    public void setContent(String content) {
+    public void setContent(List<String> content) {
         this.content = content;
     }
 

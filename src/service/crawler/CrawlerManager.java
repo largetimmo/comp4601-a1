@@ -18,6 +18,7 @@ import edu.uci.ics.crawler4j.robotstxt.RobotstxtServer;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultEdge;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -69,7 +70,7 @@ public class CrawlerManager {
                         Integer docId = docIDServer.getDocId(entry.getValue());
                         if (docId != -1){
                             CrawlDataEntity entity = crawlDataDAO.findByDocID(docId);
-                            entity.setContent(entry.getKey());
+                            entity.setContent(Arrays.asList(entry.getKey()));
                             crawlDataDAO.update(entity);
                         }
                     }
