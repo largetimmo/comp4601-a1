@@ -108,7 +108,9 @@ public class CrawlDataDAOImpl extends AbstractDAO implements CrawlDataDAO {
         crawlDataEntity.setChildUrl((List<String>) document.get("childUrl"));
         crawlDataEntity.setDocId((Integer) document.get("docId"));
         crawlDataEntity.setMetadata((Map<String, String>) document.get("metadata"));
-        crawlDataEntity.setScore((Float) document.get("score"));
+        if (document.get("score") != null){
+            crawlDataEntity.setScore((Float) document.get("score"));
+        }
         return crawlDataEntity;
     }
 }
