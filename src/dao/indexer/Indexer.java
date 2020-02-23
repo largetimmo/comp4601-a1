@@ -62,8 +62,7 @@ public class Indexer {
 
 
             doc.add(new StringField("docURL",document.getUrl(),Field.Store.YES));
-            Date date = new Date();
-            doc.add(new StringField("docDate",Long.toString(date.getTime()), Field.Store.YES));
+            doc.add(new StringField("docDate",document.getTimestamp().toString(), Field.Store.YES));
             doc.add(new StringField("type",document.getMetadata().get("Content-Type"),Field.Store.YES));
 
         }catch (NumberFormatException e){}

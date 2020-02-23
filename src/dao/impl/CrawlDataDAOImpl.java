@@ -78,6 +78,11 @@ public class CrawlDataDAOImpl extends AbstractDAO implements CrawlDataDAO {
     }
 
     @Override
+    public CrawlDataEntity findByUrl(String url) {
+        return map((Document) collection.find(Filters.eq("url",url)).iterator().tryNext());
+    }
+
+    @Override
     public Document map(CrawlDataEntity entity) {
         Document document = new Document();
         document.put("id",entity.getId());
@@ -88,6 +93,7 @@ public class CrawlDataDAOImpl extends AbstractDAO implements CrawlDataDAO {
         document.put("time",entity.getTimestamp());
         document.put("docId",entity.getDocId());
         document.put("metadata",entity.getMetadata());
+        document.put("score",entity.getScore());
         return document;
     }
 
@@ -102,6 +108,9 @@ public class CrawlDataDAOImpl extends AbstractDAO implements CrawlDataDAO {
         crawlDataEntity.setChildUrl((List<String>) document.get("childUrl"));
         crawlDataEntity.setDocId((Integer) document.get("docId"));
         crawlDataEntity.setMetadata((Map<String, String>) document.get("metadata"));
+        if (document.get("score") != null){
+            crawlDataEntity.setScore((Float) document.get("score"));
+        }
         return crawlDataEntity;
     }
 }

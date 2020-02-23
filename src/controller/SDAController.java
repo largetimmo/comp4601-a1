@@ -19,14 +19,19 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Path("/sda")
 public class SDAController {
     public static CrawlDataDAO cdi;
     private SearchServiceManager smanager;
+
+    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
     public SDAController() throws IOException {
         cdi = CrawlDataDAOImpl.getInstance();
@@ -58,6 +63,7 @@ public class SDAController {
         return docToHtml(dataEntityToDocument(cde));
     }
 
+
     @DELETE
     @Path("{id}")
     public String deleteDocument(@PathParam("id") String id,@Context HttpServletResponse servletResponse) throws IOException {
@@ -72,11 +78,51 @@ public class SDAController {
     }
 
     @GET
+    @Path("/delete/{query}")
+    public String deleteByQuery(@PathParam("query")String query, @Context HttpServletResponse servletResponse) throws IOException, ParseException {
+        Searcher sc = new Searcher();
+        TopDocs td = sc.search(query,1000);
+
+        if(td.totalHits.value == 0) {
+            return null;
+        }
+
+        sc.print(td.scoreDocs);
+
+        List<Document> documents = sc.getDocuments(td.scoreDocs);
+        if (documents.size() == 0) {
+            servletResponse.sendError(204);
+            return "";
+        }else{
+            documents.stream().map(Document::getId).map(cdi::findByDocID).map(CrawlDataEntity::getId).forEach(cdi::delete);//Delete
+            return "OK";
+        }
+
+    }
+
+    @GET
+    @Path("list")
+    @Produces(MediaType.TEXT_HTML)
+    public String getServiceList(){
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("<!doctype html><html><head><title>service list</title></head><body>");
+        stringBuilder.append("<ul>");
+        SearchServiceManager.getInstance().list().forEach(name->{
+            stringBuilder.append("<li>");
+            stringBuilder.append(name);
+            stringBuilder.append("</li>");
+        });
+        stringBuilder.append("</ul></body></html>");
+        return stringBuilder.toString();
+    }
+
+    @GET
     @Path("documents")
     @Produces(MediaType.APPLICATION_XML)
     public DocumentCollection getDocumentNames(){
         List<CrawlDataEntity> list = cdi.findAll();
         DocumentCollection documentCollection = new DocumentCollection();
+        documentCollection.setDocuments(new ArrayList<>());
         list.stream().map(this::dataEntityToDocument).peek(ele->{
             ele.setContent(null);
             ele.setId(null);
@@ -85,13 +131,20 @@ public class SDAController {
         }).forEach(documentCollection.getDocuments()::add);
         return documentCollection;
     }
-
     @GET
-    @Path("list")
+    @Path("documents")
     @Produces(MediaType.TEXT_HTML)
-    public String getServiceList(){
-       ArrayList<String> list = smanager.list();
-       return "<html> " + "<title>" + "Search services list" + "</title>" + "<body><p>" + list + "</p></body>" + "</html> ";
+    public String getDocumentNamesHTML(){
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("<!doctype html><html><head><title>doc names</title></head><body>");
+        stringBuilder.append("<ul>");
+        cdi.findAll().stream().map(CrawlDataEntity::getDocName).forEach(name->{
+            stringBuilder.append("<li>");
+            stringBuilder.append(name);
+            stringBuilder.append("</li>");
+        });
+        stringBuilder.append("</ul></body></html>");
+        return stringBuilder.toString();
     }
 
     @GET
@@ -102,6 +155,45 @@ public class SDAController {
         List<CrawlDataEntity> cde = cdi.findAll();
         i.indexDocuments(false,cde);
         return "<html> " + "<title>" + "noboost" + "</title>" + "<body><p>" + "Re-indexed" + "</p></body>" + "</html> ";
+    }
+
+    @GET
+    @Path("query/{terms}")
+    @Produces(MediaType.TEXT_HTML)
+    public String searchLocalHTML(@PathParam("terms") String terms) throws SearchException, IOException, ClassNotFoundException, ParseException {
+        Searcher sc = new Searcher();
+        TopDocs td = sc.search(terms,1000);
+
+        if(td.totalHits.value == 0) {
+            return null;
+        }
+
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("<!doctype html><html><head><title>search result</title></head><body>");
+        stringBuilder.append("<table><tr><th>#</th><th>File</th><th>Score</th><th>Date</th></tr>");
+        List<Document> documents = sc.getDocuments(td.scoreDocs);
+        for(int i =0; i< documents.size();i++ ){
+            CrawlDataEntity crawlDataEntity = cdi.findByDocID(documents.get(i).getId());
+            stringBuilder.append("<tr>");
+            stringBuilder.append("<td>");
+            stringBuilder.append(i+1);
+            stringBuilder.append("</td>");
+            stringBuilder.append("<td>");
+            stringBuilder.append("<a href=\"");
+            stringBuilder.append(documents.get(i).getUrl());
+            stringBuilder.append("\">");
+            stringBuilder.append(documents.get(i).getName());
+            stringBuilder.append("</a>");
+            stringBuilder.append("<td>");
+            stringBuilder.append(documents.get(i).getScore());
+            stringBuilder.append("</td>");
+            stringBuilder.append("<td>");
+            stringBuilder.append(sdf.format(new Timestamp(crawlDataEntity.getTimestamp())));
+            stringBuilder.append("</td>");
+            stringBuilder.append("</tr>");
+        }
+        stringBuilder.append("</table></body></html>");
+        return stringBuilder.toString();
     }
 
     @GET
@@ -119,6 +211,7 @@ public class SDAController {
 
         return sc.getDocuments(td.scoreDocs);
     }
+
     @GET
     @Path("search/{terms}")
     @Produces(MediaType.APPLICATION_XML)
