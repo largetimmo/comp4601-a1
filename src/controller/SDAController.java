@@ -6,6 +6,7 @@ import dao.indexer.Indexer;
 import dao.indexer.Searcher;
 import dao.modal.CrawlDataEntity;
 import edu.carleton.comp4601.dao.Document;
+import edu.carleton.comp4601.dao.DocumentCollection;
 import edu.carleton.comp4601.utility.SDAConstants;
 import edu.carleton.comp4601.utility.SearchException;
 import edu.carleton.comp4601.utility.SearchResult;
@@ -71,6 +72,21 @@ public class SDAController {
     }
 
     @GET
+    @Path("documents")
+    @Produces(MediaType.APPLICATION_XML)
+    public DocumentCollection getDocumentNames(){
+        List<CrawlDataEntity> list = cdi.findAll();
+        DocumentCollection documentCollection = new DocumentCollection();
+        list.stream().map(this::dataEntityToDocument).peek(ele->{
+            ele.setContent(null);
+            ele.setId(null);
+            ele.setScore(null);
+            ele.setUrl(null);
+        }).forEach(documentCollection.getDocuments()::add);
+        return documentCollection;
+    }
+
+    @GET
     @Path("list")
     @Produces(MediaType.TEXT_HTML)
     public String getServiceList(){
@@ -133,7 +149,7 @@ public class SDAController {
         }
         doc.setContent(content);
         doc.setScore((float) 0.0);
-        doc.setName("name");
+        doc.setName(cde.getDocName());
         doc.setUrl(cde.getUrl());
         return doc;
     }
