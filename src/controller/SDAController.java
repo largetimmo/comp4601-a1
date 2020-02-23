@@ -146,7 +146,6 @@ public class SDAController {
         if (cde.getContent() != null){
             doc.setContent(cde.getContent().toString());
         }
-        doc.setContent(content);
         doc.setName(cde.getDocName());
         doc.setScore(cde.getScore());
         doc.setUrl(cde.getUrl());
