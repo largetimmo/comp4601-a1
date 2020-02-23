@@ -75,7 +75,7 @@ public class CrawlerWorker extends WebCrawler {
             }
         }
         if (crawlerData.getDocName() == null){
-            crawlerData.setDocName(page.getWebURL().getURL().substring(page.getWebURL().getURL().lastIndexOf("/")));
+            crawlerData.setDocName(page.getWebURL().getURL().substring(page.getWebURL().getURL().lastIndexOf("/")+1));
         }
         CrawlDataDAOImpl.getInstance().create(crawlerData);
 
