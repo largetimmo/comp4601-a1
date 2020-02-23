@@ -18,5 +18,7 @@ public interface CrawlDataDAO extends MongoDAO<CrawlDataEntity> {
 
     CrawlDataEntity findByDocID(Integer docId);
 
+    CrawlDataEntity findByUrl(String url);
+
 
 }

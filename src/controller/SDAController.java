@@ -59,6 +59,7 @@ public class SDAController {
         return docToHtml(dataEntityToDocument(cde));
     }
 
+
     @DELETE
     @Path("{id}")
     public String deleteDocument(@PathParam("id") String id,@Context HttpServletResponse servletResponse) throws IOException {
@@ -70,6 +71,29 @@ public class SDAController {
             servletResponse.sendError(404);
             return "Not found";
         }
+    }
+
+    @GET
+    @Path("/delete/{query}")
+    public String deleteByQuery(@PathParam("query")String query, @Context HttpServletResponse servletResponse) throws IOException, ParseException {
+        Searcher sc = new Searcher();
+        TopDocs td = sc.search(query,1000);
+
+        if(td.totalHits.value == 0) {
+            return null;
+        }
+
+        sc.print(td.scoreDocs);
+
+        List<Document> documents = sc.getDocuments(td.scoreDocs);
+        if (documents.size() == 0) {
+            servletResponse.sendError(204);
+            return "";
+        }else{
+            documents.stream().map(Document::getId).map(cdi::findByDocID).map(CrawlDataEntity::getId).forEach(cdi::delete);//Delete
+            return "OK";
+        }
+
     }
 
     @GET

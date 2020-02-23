@@ -78,6 +78,11 @@ public class CrawlDataDAOImpl extends AbstractDAO implements CrawlDataDAO {
     }
 
     @Override
+    public CrawlDataEntity findByUrl(String url) {
+        return map((Document) collection.find(Filters.eq("url",url)).iterator().tryNext());
+    }
+
+    @Override
     public Document map(CrawlDataEntity entity) {
         Document document = new Document();
         document.put("id",entity.getId());
