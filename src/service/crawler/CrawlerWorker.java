@@ -48,10 +48,11 @@ public class CrawlerWorker extends WebCrawler {
         if (tikaManager == null) {
             tikaManager = TikaManager.getInstance();
         }
+        tikaManager.parse(page,crawlerData);
         if (page.getParseData() instanceof HtmlParseData) {
             //
             Document parsedWeb = Jsoup.parse(((HtmlParseData) page.getParseData()).getHtml());
-            Elements imgTags = parsedWeb.select("a");
+            Elements imgTags = parsedWeb.select("img");
             if (imgTags.size() > 0) {
                 CrawlDataImageEntity imageEntity = new CrawlDataImageEntity();
                 imageEntity.setDocId(CrawlerManager.getInstance().getDocIDServer().getDocId(url));
@@ -70,12 +71,6 @@ public class CrawlerWorker extends WebCrawler {
             titleTag.stream().map(Element::text).forEach(contentList::add);
             crawlerData.setContent(contentList);
         }
-        Metadata metadata = tikaManager.parse(page);
-        Map<String,String> metadataMap = new HashMap<>();
-        for (String name : metadata.names()) {
-            metadataMap.put(name,metadata.get(name));
-        }
-        crawlerData.setMetadata(metadataMap);
         CrawlDataDAOImpl.getInstance().create(crawlerData);
 
     }
