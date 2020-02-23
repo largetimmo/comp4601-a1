@@ -150,6 +150,15 @@ public class SDAController {
     }
 
     @GET
+    @Path("reset")
+    @Produces(MediaType.TEXT_HTML)
+    public String reset() throws IOException {
+        Indexer i = new Indexer();
+        i.resetDocs();
+        return "<html> " + "<title>" + "reset" + "</title>" + "<body><p>" + "Reset successful" + "</p></body>" + "</html> ";
+    }
+
+    @GET
     @Path("noboost")
     @Produces(MediaType.TEXT_HTML)
     public String noboost() throws IOException {
