@@ -37,10 +37,8 @@ public class PageRank {
                 else {
                     matrix.set(row, col, 0);
                 }
-                //v2.setCol(col);
                 col++;
             }
-            //v1.setRow(row);
             row++;
             col = 0;
         }
@@ -120,7 +118,11 @@ public class PageRank {
 
             graph.findOneById(i).setScore((float) total);
             print("Total: " + total);
+            graph.update(graph.findOneById(i));
         }
+
+        System.out.println(graph.findOneById(0).getUrl());
+        System.out.println(graph.findOneById(0).getScore());
 
     }
 
@@ -132,6 +134,7 @@ public class PageRank {
         PageRank p = new PageRank();
         p.Rank();
         p.setResult();
+
         System.out.println("--------------");
 
     }
