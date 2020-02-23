@@ -21,14 +21,14 @@ public class CrawlDataEntity {
 
     private Map<String,String> metadata;
 
-    private Float score;
+    private Double score;
 
     public CrawlDataEntity(Integer id,  String url, List<String> childUrl, Long timestamp) {
         this.id = id;
         this.url = url;
         this.childUrl = childUrl;
         this.timestamp = timestamp;
-        this.score = 0.0f;
+        this.score = 0.0;
     }
 
     public CrawlDataEntity() {
@@ -97,7 +97,7 @@ public class CrawlDataEntity {
     public void setDocName(String docName) {
         this.docName = docName;
     }
-    public Float getScore(){ return score; }
+    public Double getScore(){ return score; }
 
-    public void setScore(float score){this.score = score;}
+    public void setScore(double score){this.score = score;}
 }
