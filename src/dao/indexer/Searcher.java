@@ -1,5 +1,6 @@
 package dao.indexer;
 
+import dao.impl.CrawlDataDAOImpl;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.CorruptIndexException;
@@ -59,6 +60,7 @@ public class Searcher {
             doc.setContent(document.get("content"));
             doc.setUrl(document.get("docURL"));
             doc.setScore(hits[i].score);
+            doc.setName(CrawlDataDAOImpl.getInstance().findByDocID(doc.getId()).getDocName());
             temp.add(doc);
         }
         //dc.setDocuments((ArrayList<edu.carleton.comp4601.dao.Document>) temp);

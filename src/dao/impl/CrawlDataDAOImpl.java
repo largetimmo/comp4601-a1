@@ -78,15 +78,22 @@ public class CrawlDataDAOImpl extends AbstractDAO implements CrawlDataDAO {
     }
 
     @Override
+    public CrawlDataEntity findByUrl(String url) {
+        return map((Document) collection.find(Filters.eq("url",url)).iterator().tryNext());
+    }
+
+    @Override
     public Document map(CrawlDataEntity entity) {
         Document document = new Document();
         document.put("id",entity.getId());
         document.put("content",entity.getContent());
+        document.put("name",entity.getDocName());
         document.put("url",entity.getUrl());
         document.put("childUrl",entity.getChildUrl());
         document.put("time",entity.getTimestamp());
         document.put("docId",entity.getDocId());
         document.put("metadata",entity.getMetadata());
+        document.put("score",entity.getScore());
         return document;
     }
 
@@ -95,11 +102,15 @@ public class CrawlDataDAOImpl extends AbstractDAO implements CrawlDataDAO {
         CrawlDataEntity crawlDataEntity = new CrawlDataEntity();
         crawlDataEntity.setId((Integer) document.get("id"));
         crawlDataEntity.setContent((List<String>) document.get("content"));
+        crawlDataEntity.setDocName((String) document.get("name"));
         crawlDataEntity.setTimestamp((Long) document.get("time"));
         crawlDataEntity.setUrl((String) document.get("url"));
         crawlDataEntity.setChildUrl((List<String>) document.get("childUrl"));
         crawlDataEntity.setDocId((Integer) document.get("docId"));
         crawlDataEntity.setMetadata((Map<String, String>) document.get("metadata"));
+        if (document.get("score") != null){
+            crawlDataEntity.setScore((Float) document.get("score"));
+        }
         return crawlDataEntity;
     }
 }

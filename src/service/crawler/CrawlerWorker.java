@@ -70,6 +70,12 @@ public class CrawlerWorker extends WebCrawler {
             paragraphTag.stream().map(Element::text).forEach(contentList::add);
             titleTag.stream().map(Element::text).forEach(contentList::add);
             crawlerData.setContent(contentList);
+            if(titleTag.size()>0){
+                crawlerData.setDocName(titleTag.get(0).text());
+            }
+        }
+        if (crawlerData.getDocName() == null){
+            crawlerData.setDocName(page.getWebURL().getURL().substring(page.getWebURL().getURL().lastIndexOf("/")+1));
         }
         CrawlDataDAOImpl.getInstance().create(crawlerData);
 
