@@ -20,7 +20,7 @@ public class PageRank {
         graph = CrawlDataDAOImpl.getInstance();
     }
 
-    public void setupMatrix() {
+    public void Rank() {
 
         double[][] arrayDummy = new double[graph.findAll().size()][graph.findAll().size()];
         matrix = new Matrix(arrayDummy);
@@ -44,30 +44,46 @@ public class PageRank {
             row++;
             col = 0;
         }
-    }
 
-    public void remakeMatrix() {
+        System.out.println("--------------");
+
         for(int i=0; i<matrix.getRowDimension(); i++) {
-            Matrix row = matrix.getMatrix(i, i, 0, matrix.getColumnDimension() - 1);
+            Matrix row1 = matrix.getMatrix(i, i, 0, matrix.getColumnDimension() - 1);
 
-            if(row.norm2() < 1) {
-                row.timesEquals(1/matrix.getRowDimension());
+            if(row1.norm2() < 1) {
+                row1.timesEquals(1/matrix.getRowDimension());
             }
             else {
                 int count = 0;
                 for(int k=0; k<matrix.getColumnDimension(); k++) {
-                    if(row.get(0, k) == 1) {
+                    if(row1.get(0, k) == 1) {
                         count++;
                     }
                 }
-                row.timesEquals(1/count);
+                row1.timesEquals(1/count);
             }
 
-            matrix.setMatrix(i, i, 0, matrix.getColumnDimension() - 1, row);
+            matrix.setMatrix(i, i, 0, matrix.getColumnDimension() - 1, row1);
         }
 
         matrix.timesEquals(1-a);
         matrix.plusEquals(createAdditionMatrix(matrix.getColumnDimension()));
+
+        System.out.println("--------------");
+
+        for(int i=0; i<matrix.getRowDimension(); i++) {
+            Matrix row2 = matrix.getMatrix(i, i, 0, matrix.getColumnDimension() - 1);
+            for(int k=0; k<10; k++) {
+                if(k == 0) {
+                    row2 = matrix.times(row2.transpose());
+                }
+                else {
+                    row2 = matrix.times(row2);
+                }
+            }
+
+            pageRanks.put(i, row2.getRowPackedCopy());
+        }
     }
 
     public Matrix createAdditionMatrix(int dimension) {
@@ -81,22 +97,6 @@ public class PageRank {
         return addMatrix;
     }
 
-    public void cleanMatrix() {
-        for(int i=0; i<matrix.getRowDimension(); i++) {
-            Matrix row = matrix.getMatrix(i, i, 0, matrix.getColumnDimension() - 1);
-            for(int k=0; k<10; k++) {
-                if(k == 0) {
-                    row = matrix.times(row.transpose());
-                }
-                else {
-                    row = matrix.times(row);
-                }
-            }
-
-            pageRanks.put(i, row.getRowPackedCopy());
-        }
-    }
-
     public double calculateTotal() {
         double total = 0;
         for(int i=0; i<matrix.getRowDimension(); i++) {
@@ -107,7 +107,7 @@ public class PageRank {
         return total;
     }
 
-    public void checkResults() {
+    public void setResult() {
         for(int i = 0; i < pageRanks.size(); i++) {
             double total = 0;
             double[] score = pageRanks.get(i);
@@ -118,6 +118,7 @@ public class PageRank {
                 total += score[j];
             }
 
+            graph.findOneById(i).setScore((float) total);
             print("Total: " + total);
         }
 
@@ -129,13 +130,9 @@ public class PageRank {
 
     public static void main(String[] args) {
         PageRank p = new PageRank();
-        p.setupMatrix();
+        p.Rank();
+        p.setResult();
         System.out.println("--------------");
-        p.remakeMatrix();
-        System.out.println("--------------");
-        p.cleanMatrix();
-        System.out.println("--------------");
-        p.checkResults();
 
     }
 }
