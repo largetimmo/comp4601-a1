@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Path("/sda")
 public class SDAController {
@@ -77,6 +78,7 @@ public class SDAController {
     public DocumentCollection getDocumentNames(){
         List<CrawlDataEntity> list = cdi.findAll();
         DocumentCollection documentCollection = new DocumentCollection();
+        documentCollection.setDocuments(new ArrayList<>());
         list.stream().map(this::dataEntityToDocument).peek(ele->{
             ele.setContent(null);
             ele.setId(null);
@@ -84,6 +86,21 @@ public class SDAController {
             ele.setUrl(null);
         }).forEach(documentCollection.getDocuments()::add);
         return documentCollection;
+    }
+    @GET
+    @Path("documents")
+    @Produces(MediaType.TEXT_HTML)
+    public String getDocumentNamesHTML(){
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("<!doctype html><html><head><title>doc names</title></head><body>");
+        stringBuilder.append("<ul>");
+        cdi.findAll().stream().map(CrawlDataEntity::getDocName).forEach(name->{
+            stringBuilder.append("<li>");
+            stringBuilder.append(name);
+            stringBuilder.append("</li>");
+        });
+        stringBuilder.append("</ul></body></html>");
+        return stringBuilder.toString();
     }
 
     @GET
