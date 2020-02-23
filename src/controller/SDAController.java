@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -230,16 +231,66 @@ public class SDAController {
             SearchServiceManager.getInstance().reset();
         }
 
-        ArrayList<Document> documents = sr.getDocs();
-        if (documents == null || documents.isEmpty()) {
-            return new ArrayList<Document>();
+        TopDocs td = sc.search(terms,1000);
+        List<Document> docs = sc.getDocuments(td.scoreDocs);
+        sr.addAll(docs);
+
+        return sr.getDocs();
+    }
+
+    @GET
+    @Path("search/{terms}")
+    @Produces(MediaType.TEXT_HTML)
+    public String searchDistributedHTML(@PathParam("terms") String terms) throws SearchException, IOException, ClassNotFoundException, ParseException {
+
+        SearchResult sr = smanager.search(terms);
+        Searcher sc = new Searcher();
+
+
+        try {
+            sr.await(SDAConstants.TIMEOUT, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+        } finally {
+            SearchServiceManager.getInstance().reset();
         }
 
         TopDocs td = sc.search(terms,1000);
         List<Document> docs = sc.getDocuments(td.scoreDocs);
         sr.addAll(docs);
 
-        return sr.getDocs();
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("<!doctype html><html><head><title>search result</title></head><body>");
+        List<Document> documents = sr.getDocs().stream().sorted(Comparator.comparingDouble(Document::getScore)).collect(Collectors.toList());
+        if (documents.size() == 0) {
+            stringBuilder.append("No document found");
+        } else {
+            stringBuilder.append("<table><tr><th>#</th><th>File</th><th>Score</th><th>Date</th></tr>");
+            for (int i = 0; i < documents.size(); i++) {
+                CrawlDataEntity crawlDataEntity = cdi.findByDocID(documents.get(i).getId());
+                stringBuilder.append("<tr>");
+                stringBuilder.append("<td>");
+                stringBuilder.append(i + 1);
+                stringBuilder.append("</td>");
+                stringBuilder.append("<td>");
+                stringBuilder.append("<a href=\"");
+                stringBuilder.append(documents.get(i).getUrl());
+                stringBuilder.append("\">");
+                stringBuilder.append(documents.get(i).getName());
+                stringBuilder.append("</a>");
+                stringBuilder.append("<td>");
+                stringBuilder.append(documents.get(i).getScore());
+                stringBuilder.append("</td>");
+                stringBuilder.append("<td>");
+                if(crawlDataEntity != null && crawlDataEntity.getUrl().equals(documents.get(i).getUrl())){
+                    stringBuilder.append(sdf.format(new Timestamp(crawlDataEntity.getTimestamp())));
+                }
+                stringBuilder.append("</td>");
+                stringBuilder.append("</tr>");
+            }
+            stringBuilder.append("</table>");
+        }
+        stringBuilder.append("</body></html>");
+        return stringBuilder.toString();
     }
 
     private Document dataEntityToDocument(CrawlDataEntity cde) {
