@@ -151,7 +151,9 @@ public class SDAController {
         html.append( "<body>\n" );
         html.append( "<ul>\n" );
         html.append( "<p>" + doc.getContent() + "</p>\n" );
-        html.append( "<li>" + doc.getUrl() + "</li>\n" );
+        html.append( "<li> Url:" + doc.getUrl() + "</li>\n" );
+        html.append( "<li> Score:" + doc.getScore() + "</li>\n" );
+        html.append( "<li> Id:" + doc.getId() + "</li>\n" );
         html.append( "</ul>\n" );
         html.append( "</body>\n\n" );
 
