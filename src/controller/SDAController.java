@@ -6,6 +6,7 @@ import dao.indexer.Indexer;
 import dao.indexer.Searcher;
 import dao.modal.CrawlDataEntity;
 import edu.carleton.comp4601.dao.Document;
+import edu.carleton.comp4601.dao.DocumentCollection;
 import edu.carleton.comp4601.utility.SDAConstants;
 import edu.carleton.comp4601.utility.SearchException;
 import edu.carleton.comp4601.utility.SearchResult;
@@ -13,10 +14,9 @@ import edu.carleton.comp4601.utility.SearchServiceManager;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.TopDocs;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -44,7 +44,7 @@ public class SDAController {
     @Produces(MediaType.APPLICATION_XML)
     public Document getDocumentByIdXML(@PathParam("id") String id){
 
-        CrawlDataEntity cde = cdi.findOneById(Integer.parseInt(id));
+        CrawlDataEntity cde = cdi.findByDocID(Integer.parseInt(id));
         return dataEntityToDocument(cde);
     }
 
@@ -53,9 +53,37 @@ public class SDAController {
     @Produces(MediaType.TEXT_HTML)
     public String getDocumentByIdHTML(@PathParam("id") String id){
 
-        CrawlDataEntity cde = cdi.findOneById(Integer.parseInt(id));
+        CrawlDataEntity cde = cdi.findByDocID(Integer.parseInt(id));
 
         return docToHtml(dataEntityToDocument(cde));
+    }
+
+    @DELETE
+    @Path("{id}")
+    public String deleteDocument(@PathParam("id") String id,@Context HttpServletResponse servletResponse) throws IOException {
+        CrawlDataEntity crawlDataEntity  = cdi.findByDocID(Integer.valueOf(id));
+        if (crawlDataEntity != null){
+            cdi.delete(crawlDataEntity.getId());
+            return "OK";
+        }else{
+            servletResponse.sendError(404);
+            return "Not found";
+        }
+    }
+
+    @GET
+    @Path("documents")
+    @Produces(MediaType.APPLICATION_XML)
+    public DocumentCollection getDocumentNames(){
+        List<CrawlDataEntity> list = cdi.findAll();
+        DocumentCollection documentCollection = new DocumentCollection();
+        list.stream().map(this::dataEntityToDocument).peek(ele->{
+            ele.setContent(null);
+            ele.setId(null);
+            ele.setScore(null);
+            ele.setUrl(null);
+        }).forEach(documentCollection.getDocuments()::add);
+        return documentCollection;
     }
 
     @GET
@@ -118,8 +146,9 @@ public class SDAController {
         if (cde.getContent() != null){
             doc.setContent(cde.getContent().toString());
         }
+        doc.setContent(content);
+        doc.setName(cde.getDocName());
         doc.setScore(cde.getScore());
-        doc.setName("Name");
         doc.setUrl(cde.getUrl());
         return doc;
     }
@@ -137,7 +166,9 @@ public class SDAController {
         html.append( "<body>\n" );
         html.append( "<ul>\n" );
         html.append( "<p>" + doc.getContent() + "</p>\n" );
-        html.append( "<li>" + doc.getUrl() + "</li>\n" );
+        html.append( "<li> Url:" + doc.getUrl() + "</li>\n" );
+        html.append( "<li> Score:" + doc.getScore() + "</li>\n" );
+        html.append( "<li> Id:" + doc.getId() + "</li>\n" );
         html.append( "</ul>\n" );
         html.append( "</body>\n\n" );
 

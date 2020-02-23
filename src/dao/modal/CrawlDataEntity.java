@@ -17,6 +17,8 @@ public class CrawlDataEntity {
 
     private Integer docId;
 
+    private String docName;
+
     private Map<String,String> metadata;
 
     private Float score;
@@ -88,6 +90,13 @@ public class CrawlDataEntity {
         this.metadata = metadata;
     }
 
+    public String getDocName() {
+        return docName;
+    }
+
+    public void setDocName(String docName) {
+        this.docName = docName;
+    }
     public Float getScore(){ return score; }
 
     public void setScore(float score){this.score = score;}
