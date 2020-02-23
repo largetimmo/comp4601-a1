@@ -19,14 +19,14 @@ public class CrawlDataEntity {
 
     private Map<String,String> metadata;
 
-    private Integer score;
+    private Float score;
 
     public CrawlDataEntity(Integer id,  String url, List<String> childUrl, Long timestamp) {
         this.id = id;
         this.url = url;
         this.childUrl = childUrl;
         this.timestamp = timestamp;
-        this.score = 0;
+        this.score = 0.0f;
     }
 
     public CrawlDataEntity() {
@@ -88,7 +88,7 @@ public class CrawlDataEntity {
         this.metadata = metadata;
     }
 
-    public Integer getScore(){ return score; }
+    public Float getScore(){ return score; }
 
-    public void setScore(int score){this.score = score;}
+    public void setScore(float score){this.score = score;}
 }
