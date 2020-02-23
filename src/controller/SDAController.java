@@ -19,6 +19,8 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -28,6 +30,8 @@ import java.util.stream.Collectors;
 public class SDAController {
     public static CrawlDataDAO cdi;
     private SearchServiceManager smanager;
+
+    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
     public SDAController() throws IOException {
         cdi = CrawlDataDAOImpl.getInstance();
@@ -97,6 +101,22 @@ public class SDAController {
     }
 
     @GET
+    @Path("list")
+    @Produces(MediaType.TEXT_HTML)
+    public String getServiceList(){
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("<!doctype html><html><head><title>service list</title></head><body>");
+        stringBuilder.append("<ul>");
+        SearchServiceManager.getInstance().list().forEach(name->{
+            stringBuilder.append("<li>");
+            stringBuilder.append(name);
+            stringBuilder.append("</li>");
+        });
+        stringBuilder.append("</ul></body></html>");
+        return stringBuilder.toString();
+    }
+
+    @GET
     @Path("documents")
     @Produces(MediaType.APPLICATION_XML)
     public DocumentCollection getDocumentNames(){
@@ -128,14 +148,6 @@ public class SDAController {
     }
 
     @GET
-    @Path("list")
-    @Produces(MediaType.TEXT_HTML)
-    public String getServiceList(){
-       ArrayList<String> list = smanager.list();
-       return "<html> " + "<title>" + "Search services list" + "</title>" + "<body><p>" + list + "</p></body>" + "</html> ";
-    }
-
-    @GET
     @Path("noboost")
     @Produces(MediaType.TEXT_HTML)
     public String noboost() throws IOException {
@@ -143,6 +155,45 @@ public class SDAController {
         List<CrawlDataEntity> cde = cdi.findAll();
         i.indexDocuments(false,cde);
         return "<html> " + "<title>" + "noboost" + "</title>" + "<body><p>" + "Re-indexed" + "</p></body>" + "</html> ";
+    }
+
+    @GET
+    @Path("query/{terms}")
+    @Produces(MediaType.TEXT_HTML)
+    public String searchLocalHTML(@PathParam("terms") String terms) throws SearchException, IOException, ClassNotFoundException, ParseException {
+        Searcher sc = new Searcher();
+        TopDocs td = sc.search(terms,1000);
+
+        if(td.totalHits.value == 0) {
+            return null;
+        }
+
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("<!doctype html><html><head><title>search result</title></head><body>");
+        stringBuilder.append("<table><tr><th>#</th><th>File</th><th>Score</th><th>Date</th></tr>");
+        List<Document> documents = sc.getDocuments(td.scoreDocs);
+        for(int i =0; i< documents.size();i++ ){
+            CrawlDataEntity crawlDataEntity = cdi.findByDocID(documents.get(i).getId());
+            stringBuilder.append("<tr>");
+            stringBuilder.append("<td>");
+            stringBuilder.append(i+1);
+            stringBuilder.append("</td>");
+            stringBuilder.append("<td>");
+            stringBuilder.append("<a href=\"");
+            stringBuilder.append(documents.get(i).getUrl());
+            stringBuilder.append("\">");
+            stringBuilder.append(documents.get(i).getName());
+            stringBuilder.append("</a>");
+            stringBuilder.append("<td>");
+            stringBuilder.append(documents.get(i).getScore());
+            stringBuilder.append("</td>");
+            stringBuilder.append("<td>");
+            stringBuilder.append(sdf.format(new Timestamp(crawlDataEntity.getTimestamp())));
+            stringBuilder.append("</td>");
+            stringBuilder.append("</tr>");
+        }
+        stringBuilder.append("</table></body></html>");
+        return stringBuilder.toString();
     }
 
     @GET
@@ -160,6 +211,7 @@ public class SDAController {
 
         return sc.getDocuments(td.scoreDocs);
     }
+
     @GET
     @Path("search/{terms}")
     @Produces(MediaType.APPLICATION_XML)
