@@ -84,6 +84,9 @@ public class CrawlDataDAOImpl extends AbstractDAO implements CrawlDataDAO {
 
     @Override
     public Document map(CrawlDataEntity entity) {
+        if(entity == null){
+            return null;
+        }
         Document document = new Document();
         document.put("id",entity.getId());
         document.put("content",entity.getContent());
@@ -99,6 +102,9 @@ public class CrawlDataDAOImpl extends AbstractDAO implements CrawlDataDAO {
 
     @Override
     public CrawlDataEntity map(Document document) {
+        if(document == null){
+            return null;
+        }
         CrawlDataEntity crawlDataEntity = new CrawlDataEntity();
         crawlDataEntity.setId((Integer) document.get("id"));
         crawlDataEntity.setContent((List<String>) document.get("content"));
