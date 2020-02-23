@@ -82,6 +82,7 @@ public class CrawlDataDAOImpl extends AbstractDAO implements CrawlDataDAO {
         Document document = new Document();
         document.put("id",entity.getId());
         document.put("content",entity.getContent());
+        document.put("name",entity.getDocName());
         document.put("url",entity.getUrl());
         document.put("childUrl",entity.getChildUrl());
         document.put("time",entity.getTimestamp());
@@ -95,6 +96,7 @@ public class CrawlDataDAOImpl extends AbstractDAO implements CrawlDataDAO {
         CrawlDataEntity crawlDataEntity = new CrawlDataEntity();
         crawlDataEntity.setId((Integer) document.get("id"));
         crawlDataEntity.setContent((List<String>) document.get("content"));
+        crawlDataEntity.setDocName((String) document.get("name"));
         crawlDataEntity.setTimestamp((Long) document.get("time"));
         crawlDataEntity.setUrl((String) document.get("url"));
         crawlDataEntity.setChildUrl((List<String>) document.get("childUrl"));

@@ -20,6 +20,8 @@ public class CrawlDataEntity {
 
     private Integer docId;
 
+    private String docName;
+
     private Map<String,String> metadata;
 
     public CrawlDataEntity(Integer id,  String url, List<String> childUrl, Long timestamp) {
@@ -86,5 +88,13 @@ public class CrawlDataEntity {
 
     public void setMetadata(Map<String, String> metadata) {
         this.metadata = metadata;
+    }
+
+    public String getDocName() {
+        return docName;
+    }
+
+    public void setDocName(String docName) {
+        this.docName = docName;
     }
 }
