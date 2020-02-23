@@ -13,10 +13,9 @@ import edu.carleton.comp4601.utility.SearchServiceManager;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.TopDocs;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -44,7 +43,7 @@ public class SDAController {
     @Produces(MediaType.APPLICATION_XML)
     public Document getDocumentByIdXML(@PathParam("id") String id){
 
-        CrawlDataEntity cde = cdi.findOneById(Integer.parseInt(id));
+        CrawlDataEntity cde = cdi.findByDocID(Integer.parseInt(id));
         return dataEntityToDocument(cde);
     }
 
@@ -53,9 +52,21 @@ public class SDAController {
     @Produces(MediaType.TEXT_HTML)
     public String getDocumentByIdHTML(@PathParam("id") String id){
 
-        CrawlDataEntity cde = cdi.findOneById(Integer.parseInt(id));
+        CrawlDataEntity cde = cdi.findByDocID(Integer.parseInt(id));
 
         return docToHtml(dataEntityToDocument(cde));
+    }
+
+    @DELETE
+    @Path("{id}")
+    public String deleteDocument(@PathParam("id") String id,@Context HttpServletResponse servletResponse) throws IOException {
+        CrawlDataEntity crawlDataEntity  = cdi.findByDocID(Integer.valueOf(id));
+        if (crawlDataEntity != null){
+            return "OK";
+        }else{
+            servletResponse.sendError(404);
+            return "Not found";
+        }
     }
 
     @GET
