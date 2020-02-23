@@ -217,9 +217,11 @@ public class SDAController {
     @GET
     @Path("search/{terms}")
     @Produces(MediaType.APPLICATION_XML)
-    public ArrayList<Document> searchDistributedXML(@PathParam("terms") String terms) throws SearchException, IOException, ClassNotFoundException {
+    public ArrayList<Document> searchDistributedXML(@PathParam("terms") String terms) throws SearchException, IOException, ClassNotFoundException, ParseException {
 
         SearchResult sr = smanager.search(terms);
+        Searcher sc = new Searcher();
+
 
         try {
             sr.await(SDAConstants.TIMEOUT, TimeUnit.SECONDS);
@@ -233,6 +235,10 @@ public class SDAController {
             return new ArrayList<Document>();
         }
 
+        TopDocs td = sc.search(terms,1000);
+        List<Document> docs = sc.getDocuments(td.scoreDocs);
+        sr.addAll(docs);
+
         return sr.getDocs();
     }
 
@@ -242,7 +248,7 @@ public class SDAController {
             doc.setContent(cde.getContent().toString());
         }
         doc.setName(cde.getDocName());
-        doc.setScore(cde.getScore());
+        doc.setScore((float) cde.getScore());
         doc.setUrl(cde.getUrl());
         return doc;
     }
