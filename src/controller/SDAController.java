@@ -62,6 +62,7 @@ public class SDAController {
     public String deleteDocument(@PathParam("id") String id,@Context HttpServletResponse servletResponse) throws IOException {
         CrawlDataEntity crawlDataEntity  = cdi.findByDocID(Integer.valueOf(id));
         if (crawlDataEntity != null){
+            cdi.delete(crawlDataEntity.getId());
             return "OK";
         }else{
             servletResponse.sendError(404);
