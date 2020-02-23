@@ -116,9 +116,10 @@ public class PageRank {
                 total += score[j];
             }
 
-            graph.findOneById(i).setScore((float) total);
+            CrawlDataEntity c = graph.findOneById(i);
+            c.setScore(total);
             print("Total: " + total);
-            graph.update(graph.findOneById(i));
+            graph.update(c);
         }
 
         System.out.println(graph.findOneById(0).getUrl());
