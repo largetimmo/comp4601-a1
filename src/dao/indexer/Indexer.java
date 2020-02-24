@@ -15,7 +15,6 @@ import org.apache.lucene.store.FSDirectory;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.Objects;
 
 public class Indexer {
     private int count;
@@ -23,8 +22,17 @@ public class Indexer {
     Document doc;
     private String PATH = "lucene";
 
+
     public Indexer() throws IOException
     {
+        try{
+            for (File file : new java.io.File("lucene").listFiles()){
+                if (!file.isDirectory()) {
+                    file.delete();
+                }
+            }
+        }catch (NullPointerException e){}
+
         Directory indexDirectory = FSDirectory.open(new File(PATH).toPath());
         StandardAnalyzer analyzer = new StandardAnalyzer();
         IndexWriterConfig indexWriterConfig = new IndexWriterConfig(analyzer);
@@ -33,13 +41,19 @@ public class Indexer {
         this.count = 0;
     }
 
-    public void resetDocs(){
-        //clean all old files
-        for(File file: Objects.requireNonNull(new File("lucene").listFiles())) {
-            if (!file.isDirectory())
-                file.delete();
-        }
-    }
+//    public void resetDocs() throws IOException {
+//        //clean all old files
+////        for(File file: Objects.requireNonNull(new File("lucene").listFiles())) {
+////            if (!file.isDirectory())
+////                file.delete();
+////        }
+//        for (File file : new java.io.File("lucene").listFiles()){
+//            if (!file.isDirectory()) {
+//                file.delete();
+//            }
+//        }
+//
+//    }
 
     public void indexDocuments(boolean boost, List<CrawlDataEntity> l) throws IOException {
         for (CrawlDataEntity c : l){

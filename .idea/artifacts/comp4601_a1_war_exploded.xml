@@ -21,6 +21,9 @@
           <element id="library" level="project" name="org.apache.pdfbox:jempbox:1.8.13" />
           <element id="library" level="project" name="org.mongodb:mongo-java-driver:3.12.1" />
           <element id="library" level="project" name="lib" />
+          <element id="library" level="project" name="gov.nist.math:jama:1.0.3" />
+          <element id="library" level="project" name="org.apache.lucene:lucene-core:6.6.6" />
+          <element id="library" level="project" name="org.apache.lucene:lucene-queryparser:6.6.6" />
         </element>
       </element>
     </root>

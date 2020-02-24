@@ -150,7 +150,7 @@ public class SDAController {
     @Produces(MediaType.TEXT_HTML)
     public String reset() throws IOException {
         Indexer i = new Indexer();
-        i.resetDocs();
+        i.close();
         return "<html> " + "<title>" + "reset" + "</title>" + "<body><p>" + "Reset successful" + "</p></body>" + "</html> ";
     }
 
@@ -159,7 +159,6 @@ public class SDAController {
     @Produces(MediaType.TEXT_HTML)
     public String noboost() throws IOException {
         Indexer i = new Indexer();
-        i.resetDocs();
         List<CrawlDataEntity> cde = cdi.findAll();
         i.indexDocuments(false, cde);
         return "<html> " + "<title>" + "noboost" + "</title>" + "<body><p>" + "Re-indexed" + "</p></body>" + "</html> ";
@@ -170,7 +169,6 @@ public class SDAController {
     @Produces(MediaType.TEXT_HTML)
     public String boost() throws IOException {
         Indexer i = new Indexer();
-        i.resetDocs();
         List<CrawlDataEntity> cde = cdi.findAll();
         i.indexDocuments(true, cde);
         return "<html> " + "<title>" + "boost" + "</title>" + "<body><p>" + "Boost" + "</p></body>" + "</html> ";
@@ -246,7 +244,7 @@ public class SDAController {
 
         TopDocs td = sc.search(terms,1000);
         List<Document> docs = sc.getDocuments(td.scoreDocs);
-        sr.addAll(docs);
+        //sr.addAll(docs);
 
         return sr.getDocs();
     }
