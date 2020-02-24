@@ -60,7 +60,11 @@ public class Searcher {
             doc.setContent(document.get("content"));
             doc.setUrl(document.get("docURL"));
             doc.setScore(hits[i].score);
-            doc.setName(CrawlDataDAOImpl.getInstance().findByDocID(doc.getId()).getDocName());
+            if (CrawlDataDAOImpl.getInstance().findByDocID(doc.getId()) == null){
+                continue;
+            }else{
+                doc.setName(CrawlDataDAOImpl.getInstance().findByDocID(doc.getId()).getDocName());
+            }
             temp.add(doc);
         }
         //dc.setDocuments((ArrayList<edu.carleton.comp4601.dao.Document>) temp);
