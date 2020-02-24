@@ -52,10 +52,10 @@ public class PageRank {
         }
     }
 
-    public static void main(String[] args) {
-        PageRank p = new PageRank();
-        p.calculatePageRank();
-
-
-    }
+//    public static void main(String[] args) {
+//        PageRank p = new PageRank();
+//        p.calculatePageRank();
+//
+//
+//    }
 }

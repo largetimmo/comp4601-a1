@@ -15,7 +15,6 @@ import org.apache.lucene.store.FSDirectory;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.Objects;
 
 public class Indexer {
     private int count;
@@ -23,8 +22,17 @@ public class Indexer {
     Document doc;
     private String PATH = "lucene";
 
+
     public Indexer() throws IOException
     {
+        try{
+            for (File file : new java.io.File("lucene").listFiles()){
+                if (!file.isDirectory()) {
+                    file.delete();
+                }
+            }
+        }catch (NullPointerException e){}
+
         Directory indexDirectory = FSDirectory.open(new File(PATH).toPath());
         StandardAnalyzer analyzer = new StandardAnalyzer();
         IndexWriterConfig indexWriterConfig = new IndexWriterConfig(analyzer);
@@ -33,33 +41,44 @@ public class Indexer {
         this.count = 0;
     }
 
-    public void resetDocs(){
-        //clean all old files
-        for(File file: Objects.requireNonNull(new File("lucene").listFiles())) {
-            if (!file.isDirectory())
-                file.delete();
-        }
-    }
+//    public void resetDocs() throws IOException {
+//        //clean all old files
+////        for(File file: Objects.requireNonNull(new File("lucene").listFiles())) {
+////            if (!file.isDirectory())
+////                file.delete();
+////        }
+//        for (File file : new java.io.File("lucene").listFiles()){
+//            if (!file.isDirectory()) {
+//                file.delete();
+//            }
+//        }
+//
+//    }
 
-    public void indexDocuments(boolean boost, List<CrawlDataEntity> l) throws IOException {
+    public boolean indexDocuments(boolean boost, List<CrawlDataEntity> l) throws IOException {
         for (CrawlDataEntity c : l){
-            indexADocument(c,boost);
+            boolean temp = indexADocument(c,boost);
+            if (!temp){
+                return false;
+            }
         }
         writer.close();
+        return true;
     }
 
 
-    public void indexADocument(CrawlDataEntity document,boolean boost) throws IOException {
+    public boolean indexADocument(CrawlDataEntity document,boolean boost) throws IOException {
         doc = new Document();
         StringField docId = new StringField("docId",document.getDocId().toString(), Field.Store.YES);
+        TextField content;
         if (document.getContent() != null){
             String temp = "";
             for (String s: document.getContent()){
                 temp+=s+"\n";
             }
-            TextField content = new TextField("content",temp,Field.Store.YES);
+             content = new TextField("content",temp,Field.Store.YES);
         }else {
-            TextField content = new TextField("content","",Field.Store.YES);
+             content = new TextField("content","",Field.Store.YES);
         }
         StringField i = new StringField("i","Liu-Kyle",Field.Store.YES);
         StringField docURL = new StringField("docURL",document.getUrl(),Field.Store.YES);
@@ -67,12 +86,29 @@ public class Indexer {
         StringField type = new StringField("type",document.getMetadata().get("Content-Type"),Field.Store.YES);
 
         if (boost){
-            //docId.setboo
+            try{
+                docId.setBoost(document.getScore().floatValue());
+                content.setBoost(document.getScore().floatValue());
+                i.setBoost(document.getScore().floatValue());
+                docURL.setBoost(document.getScore().floatValue());
+                docDate.setBoost(document.getScore().floatValue());
+                type.setBoost(document.getScore().floatValue());
+            }catch (NullPointerException e){
+                return false;
+            }
         }
+
+        doc.add(docId);
+        doc.add(content);
+        doc.add(i);
+        doc.add(docURL);
+        doc.add(docDate);
+        doc.add(type);
 
 
         writer.addDocument(doc);
         System.out.println("-------------------------------------------------------"+doc.get("docId"));
+        return true;
     }
 
     public void close() throws CorruptIndexException, IOException

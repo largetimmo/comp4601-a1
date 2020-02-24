@@ -84,10 +84,6 @@ public class SDAController {
         Searcher sc = new Searcher();
         TopDocs td = sc.search(query, 1000);
 
-        if (td.totalHits.value == 0) {
-            return null;
-        }
-
         sc.print(td.scoreDocs);
 
         List<Document> documents = sc.getDocuments(td.scoreDocs);
@@ -154,7 +150,7 @@ public class SDAController {
     @Produces(MediaType.TEXT_HTML)
     public String reset() throws IOException {
         Indexer i = new Indexer();
-        i.resetDocs();
+        i.close();
         return "<html> " + "<title>" + "reset" + "</title>" + "<body><p>" + "Reset successful" + "</p></body>" + "</html> ";
     }
 
@@ -164,8 +160,27 @@ public class SDAController {
     public String noboost() throws IOException {
         Indexer i = new Indexer();
         List<CrawlDataEntity> cde = cdi.findAll();
-        i.indexDocuments(false, cde);
-        return "<html> " + "<title>" + "noboost" + "</title>" + "<body><p>" + "Re-indexed" + "</p></body>" + "</html> ";
+        boolean temp = i.indexDocuments(false, cde);
+        if (temp){
+            return "<html> " + "<title>" + "noboost" + "</title>" + "<body><p>" + "Re-indexed" + "</p></body>" + "</html> ";
+        }else{
+            return "<html> " + "<title>" + "noboost" + "</title>" + "<body><p>" + "Re-indexed failed" + "</p></body>" + "</html> ";
+        }
+
+    }
+
+    @GET
+    @Path("boost")
+    @Produces(MediaType.TEXT_HTML)
+    public String boost() throws IOException {
+        Indexer i = new Indexer();
+        List<CrawlDataEntity> cde = cdi.findAll();
+        boolean temp = i.indexDocuments(true, cde);
+        if (temp){
+            return "<html> " + "<title>" + "boost" + "</title>" + "<body><p>" + "Boost" + "</p></body>" + "</html> ";
+        }else{
+            return "<html> " + "<title>" + "boost" + "</title>" + "<body><p>" + "Boost failed" + "</p></body>" + "</html> ";
+        }
     }
 
     @GET
@@ -215,10 +230,6 @@ public class SDAController {
         Searcher sc = new Searcher();
         TopDocs td = sc.search(terms, 1000);
 
-        if (td.totalHits.value == 0) {
-            return null;
-        }
-
         sc.print(td.scoreDocs);
 
         return sc.getDocuments(td.scoreDocs);
@@ -242,7 +253,7 @@ public class SDAController {
 
         TopDocs td = sc.search(terms,1000);
         List<Document> docs = sc.getDocuments(td.scoreDocs);
-        sr.addAll(docs);
+        //sr.addAll(docs);
 
         return sr.getDocs();
     }
