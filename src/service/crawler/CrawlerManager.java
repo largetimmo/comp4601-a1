@@ -4,6 +4,7 @@ import dao.CrawlDataDAO;
 import dao.CrawlDataImageDAO;
 import dao.impl.CrawlDataDAOImpl;
 import dao.impl.CrawlDataImageDAOImpl;
+import dao.indexer.PageRank;
 import dao.modal.CrawlDataEntity;
 import dao.modal.CrawlDataImageEntity;
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
@@ -56,6 +57,7 @@ public class CrawlerManager {
             CrawlController finalController = controller;
             new Thread(()->{
                 CrawlController.WebCrawlerFactory<CrawlerWorker> factory = () -> new CrawlerWorker("dyndns.org:8443","uci.edu","sikaman.dyndns.org");
+
                 finalController.start(factory, workers);
                 //Add image data
                 List<CrawlDataImageEntity> list = crawlDataImageDAO.findAll();
@@ -69,6 +71,9 @@ public class CrawlerManager {
                         }
                     }
                 });
+                //Calculate page rank
+                new PageRank().calculatePageRank();
+                System.out.println("Calculate finish");
             }).start();
 
         } catch (Exception e) {
