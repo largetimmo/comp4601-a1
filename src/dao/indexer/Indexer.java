@@ -52,14 +52,15 @@ public class Indexer {
     public void indexADocument(CrawlDataEntity document,boolean boost) throws IOException {
         doc = new Document();
         StringField docId = new StringField("docId",document.getDocId().toString(), Field.Store.YES);
+        TextField content;
         if (document.getContent() != null){
             String temp = "";
             for (String s: document.getContent()){
                 temp+=s+"\n";
             }
-            TextField content = new TextField("content",temp,Field.Store.YES);
+             content = new TextField("content",temp,Field.Store.YES);
         }else {
-            TextField content = new TextField("content","",Field.Store.YES);
+             content = new TextField("content","",Field.Store.YES);
         }
         StringField i = new StringField("i","Liu-Kyle",Field.Store.YES);
         StringField docURL = new StringField("docURL",document.getUrl(),Field.Store.YES);
@@ -67,8 +68,20 @@ public class Indexer {
         StringField type = new StringField("type",document.getMetadata().get("Content-Type"),Field.Store.YES);
 
         if (boost){
-            //docId.setboo
+            docId.setBoost(document.getScore().floatValue());
+            content.setBoost(document.getScore().floatValue());
+            i.setBoost(document.getScore().floatValue());
+            docURL.setBoost(document.getScore().floatValue());
+            docDate.setBoost(document.getScore().floatValue());
+            type.setBoost(document.getScore().floatValue());
         }
+
+        doc.add(docId);
+        doc.add(content);
+        doc.add(i);
+        doc.add(docURL);
+        doc.add(docDate);
+        doc.add(type);
 
 
         writer.addDocument(doc);

@@ -84,10 +84,6 @@ public class SDAController {
         Searcher sc = new Searcher();
         TopDocs td = sc.search(query, 1000);
 
-        if (td.totalHits.value == 0) {
-            return null;
-        }
-
         sc.print(td.scoreDocs);
 
         List<Document> documents = sc.getDocuments(td.scoreDocs);
@@ -163,9 +159,21 @@ public class SDAController {
     @Produces(MediaType.TEXT_HTML)
     public String noboost() throws IOException {
         Indexer i = new Indexer();
+        i.resetDocs();
         List<CrawlDataEntity> cde = cdi.findAll();
         i.indexDocuments(false, cde);
         return "<html> " + "<title>" + "noboost" + "</title>" + "<body><p>" + "Re-indexed" + "</p></body>" + "</html> ";
+    }
+
+    @GET
+    @Path("boost")
+    @Produces(MediaType.TEXT_HTML)
+    public String boost() throws IOException {
+        Indexer i = new Indexer();
+        i.resetDocs();
+        List<CrawlDataEntity> cde = cdi.findAll();
+        i.indexDocuments(true, cde);
+        return "<html> " + "<title>" + "boost" + "</title>" + "<body><p>" + "Boost" + "</p></body>" + "</html> ";
     }
 
     @GET
@@ -214,10 +222,6 @@ public class SDAController {
     public List<Document> searchLocalXML(@PathParam("terms") String terms) throws SearchException, IOException, ClassNotFoundException, ParseException {
         Searcher sc = new Searcher();
         TopDocs td = sc.search(terms, 1000);
-
-        if (td.totalHits.value == 0) {
-            return null;
-        }
 
         sc.print(td.scoreDocs);
 
