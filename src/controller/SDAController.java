@@ -160,8 +160,13 @@ public class SDAController {
     public String noboost() throws IOException {
         Indexer i = new Indexer();
         List<CrawlDataEntity> cde = cdi.findAll();
-        i.indexDocuments(false, cde);
-        return "<html> " + "<title>" + "noboost" + "</title>" + "<body><p>" + "Re-indexed" + "</p></body>" + "</html> ";
+        boolean temp = i.indexDocuments(false, cde);
+        if (temp){
+            return "<html> " + "<title>" + "noboost" + "</title>" + "<body><p>" + "Re-indexed" + "</p></body>" + "</html> ";
+        }else{
+            return "<html> " + "<title>" + "noboost" + "</title>" + "<body><p>" + "Re-indexed failed" + "</p></body>" + "</html> ";
+        }
+
     }
 
     @GET
@@ -170,8 +175,12 @@ public class SDAController {
     public String boost() throws IOException {
         Indexer i = new Indexer();
         List<CrawlDataEntity> cde = cdi.findAll();
-        i.indexDocuments(true, cde);
-        return "<html> " + "<title>" + "boost" + "</title>" + "<body><p>" + "Boost" + "</p></body>" + "</html> ";
+        boolean temp = i.indexDocuments(true, cde);
+        if (temp){
+            return "<html> " + "<title>" + "boost" + "</title>" + "<body><p>" + "Boost" + "</p></body>" + "</html> ";
+        }else{
+            return "<html> " + "<title>" + "boost" + "</title>" + "<body><p>" + "Boost failed" + "</p></body>" + "</html> ";
+        }
     }
 
     @GET

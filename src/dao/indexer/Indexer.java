@@ -55,15 +55,19 @@ public class Indexer {
 //
 //    }
 
-    public void indexDocuments(boolean boost, List<CrawlDataEntity> l) throws IOException {
+    public boolean indexDocuments(boolean boost, List<CrawlDataEntity> l) throws IOException {
         for (CrawlDataEntity c : l){
-            indexADocument(c,boost);
+            boolean temp = indexADocument(c,boost);
+            if (!temp){
+                return false;
+            }
         }
         writer.close();
+        return true;
     }
 
 
-    public void indexADocument(CrawlDataEntity document,boolean boost) throws IOException {
+    public boolean indexADocument(CrawlDataEntity document,boolean boost) throws IOException {
         doc = new Document();
         StringField docId = new StringField("docId",document.getDocId().toString(), Field.Store.YES);
         TextField content;
@@ -82,12 +86,16 @@ public class Indexer {
         StringField type = new StringField("type",document.getMetadata().get("Content-Type"),Field.Store.YES);
 
         if (boost){
-            docId.setBoost(document.getScore().floatValue());
-            content.setBoost(document.getScore().floatValue());
-            i.setBoost(document.getScore().floatValue());
-            docURL.setBoost(document.getScore().floatValue());
-            docDate.setBoost(document.getScore().floatValue());
-            type.setBoost(document.getScore().floatValue());
+            try{
+                docId.setBoost(document.getScore().floatValue());
+                content.setBoost(document.getScore().floatValue());
+                i.setBoost(document.getScore().floatValue());
+                docURL.setBoost(document.getScore().floatValue());
+                docDate.setBoost(document.getScore().floatValue());
+                type.setBoost(document.getScore().floatValue());
+            }catch (NullPointerException e){
+                return false;
+            }
         }
 
         doc.add(docId);
@@ -100,6 +108,7 @@ public class Indexer {
 
         writer.addDocument(doc);
         System.out.println("-------------------------------------------------------"+doc.get("docId"));
+        return true;
     }
 
     public void close() throws CorruptIndexException, IOException
