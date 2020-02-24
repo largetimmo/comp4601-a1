@@ -4,6 +4,7 @@ import dao.CrawlDataDAO;
 import dao.CrawlDataImageDAO;
 import dao.impl.CrawlDataDAOImpl;
 import dao.impl.CrawlDataImageDAOImpl;
+import dao.indexer.PageRank;
 import dao.modal.CrawlDataEntity;
 import dao.modal.CrawlDataImageEntity;
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
@@ -69,6 +70,9 @@ public class CrawlerManager {
                         }
                     }
                 });
+                //Calculate page rank
+                new PageRank().calculatePageRank();
+                System.out.println("Calculate finish");
             }).start();
 
         } catch (Exception e) {
