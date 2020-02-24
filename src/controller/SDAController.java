@@ -302,6 +302,35 @@ public class SDAController {
         return stringBuilder.toString();
     }
 
+    @GET
+    @Path("pagerank")
+    @Produces(MediaType.TEXT_HTML)
+    public String getPageRank(){
+        List<CrawlDataEntity> list = cdi.findAll().stream().sorted(Comparator.comparingDouble(CrawlDataEntity::getScore)).collect(Collectors.toList());
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("<!doctype html><html><head><title>Page Rank</title></head><body>");
+        stringBuilder.append("<table><tr><th>Doc Name</th><th>Score</th></tr>");
+        for(CrawlDataEntity crawlDataEntity : list){
+            stringBuilder.append("<tr>");
+            stringBuilder.append("<td>");
+            stringBuilder.append("<a href=\"");
+            stringBuilder.append(crawlDataEntity.getUrl());
+            stringBuilder.append("\">");
+            stringBuilder.append(crawlDataEntity.getDocName());
+            stringBuilder.append("</a>");
+            stringBuilder.append("</td>");
+            stringBuilder.append("<td>");
+            stringBuilder.append(crawlDataEntity.getScore());
+            stringBuilder.append("</td>");
+            stringBuilder.append("</tr>");
+
+        }
+        stringBuilder.append("</table>");
+        stringBuilder.append("</body></html>");
+        return stringBuilder.toString();
+
+    }
+
     private Document dataEntityToDocument(CrawlDataEntity cde) {
         Document doc = new Document(cde.getId());
         if (cde.getContent() != null) {
