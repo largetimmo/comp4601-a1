@@ -22,7 +22,7 @@ public abstract class AbstractDAO {
         database = mongoClient.getDatabase(DB_NAME);
         collection = database.getCollection(collectionName);
         this.collectionName = collectionName;
-        //collection.drop();
+        collection.drop();
     }
 
 

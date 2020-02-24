@@ -49,19 +49,38 @@ public class SDAController {
     @Path("{id}")
     @Produces(MediaType.APPLICATION_XML)
     public Document getDocumentByIdXML(@PathParam("id") String id) {
+        CrawlDataEntity cde;
+        try{
+            cde = cdi.findByDocID(Integer.parseInt(id));
+        }catch (NumberFormatException e){
+            Document d = new Document();
+            d.setContent("tag not provided");
+            return d;
+        }
 
-        CrawlDataEntity cde = cdi.findByDocID(Integer.parseInt(id));
-        return dataEntityToDocument(cde);
+        if (cde == null){
+            return new Document();
+        }else{
+            return dataEntityToDocument(cde);
+        }
     }
 
     @GET
     @Path("{id}")
     @Produces(MediaType.TEXT_HTML)
     public String getDocumentByIdHTML(@PathParam("id") String id) {
+        CrawlDataEntity cde;
+        try{
+             cde = cdi.findByDocID(Integer.parseInt(id));
+        }catch (NumberFormatException e){
+            return "tag no provided.";
+        }
 
-        CrawlDataEntity cde = cdi.findByDocID(Integer.parseInt(id));
-
-        return docToHtml(dataEntityToDocument(cde));
+        if (cde == null){
+            return "This id not exist";
+        }else{
+            return docToHtml(dataEntityToDocument(cde));
+        }
     }
 
 
@@ -253,7 +272,7 @@ public class SDAController {
 
         TopDocs td = sc.search(terms,1000);
         List<Document> docs = sc.getDocuments(td.scoreDocs);
-        //sr.addAll(docs);
+        sr.addAll(docs);
 
         return sr.getDocs();
     }
@@ -343,7 +362,7 @@ public class SDAController {
     }
 
     private Document dataEntityToDocument(CrawlDataEntity cde) {
-        Document doc = new Document(cde.getId());
+        Document doc = new Document(cde.getDocId());
         if (cde.getContent() != null) {
             doc.setContent(cde.getContent().toString());
         }

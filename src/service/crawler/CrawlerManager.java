@@ -58,7 +58,7 @@ public class CrawlerManager {
             new Thread(()->{
                 CrawlController.WebCrawlerFactory<CrawlerWorker> factory = () -> new CrawlerWorker("dyndns.org:8443","uci.edu","sikaman.dyndns.org");
 
-               // finalController.start(factory, workers);
+                finalController.start(factory, workers);
                 //Add image data
                 List<CrawlDataImageEntity> list = crawlDataImageDAO.findAll();
                 list.stream().forEach(ele->{

@@ -4,7 +4,6 @@ import dao.modal.CrawlDataEntity;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexWriter;
@@ -69,7 +68,7 @@ public class Indexer {
 
     public boolean indexADocument(CrawlDataEntity document,boolean boost) throws IOException {
         doc = new Document();
-        StringField docId = new StringField("docId",document.getDocId().toString(), Field.Store.YES);
+        TextField docId = new TextField("docId",document.getDocId().toString(), Field.Store.YES);
         TextField content;
         if (document.getContent() != null){
             String temp = "";
@@ -80,10 +79,10 @@ public class Indexer {
         }else {
              content = new TextField("content","",Field.Store.YES);
         }
-        StringField i = new StringField("i","Liu-Kyle",Field.Store.YES);
-        StringField docURL = new StringField("docURL",document.getUrl(),Field.Store.YES);
-        StringField docDate = new StringField("docDate",document.getTimestamp().toString(), Field.Store.YES);
-        StringField type = new StringField("type",document.getMetadata().get("Content-Type"),Field.Store.YES);
+        TextField i = new TextField("i","Liu-Kyle",Field.Store.YES);
+        TextField docURL = new TextField("docURL",document.getUrl(),Field.Store.YES);
+        TextField docDate = new TextField("docDate",document.getTimestamp().toString(), Field.Store.YES);
+        TextField type = new TextField("type",document.getMetadata().get("Content-Type"),Field.Store.YES);
 
         if (boost){
             try{
